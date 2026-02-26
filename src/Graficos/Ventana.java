@@ -6,6 +6,11 @@ import java.awt.Canvas;
 import javax.swing.JFrame;
 
 public class Ventana extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public Ventana(String nombre, Canvas superficieDibujo) {        // Canvas es una clase especializada en recibir dibujos y crear graficos  
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       // Para cerra  la ventana
 		this.setTitle(nombre);                                    // Da titulo a la ventana
