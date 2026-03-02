@@ -17,7 +17,20 @@ public class ControlPrincipal {
 	}
 	
 	private static void inicializar() {
-		Dibujo dibujo = new Dibujo(800, 600); // Crea un nuevo objeto de la clase Dibujo con un tamaño de 800x600 píxeles
-		new Ventana("Detective Misterioso", dibujo); // Crea una nueva ventana con el título "Point Click" y la superficie de dibujo creada anteriormente
+		crearVentana(800, 600, "Detective Misterioso"); // Crea una nueva ventana con el título "Point Click" y la superficie de dibujo creada anteriormente
+	}
+	
+	private static void crearVentana(int ancho, int alto, String nombre) {
+		Dibujo dibujo = new Dibujo(ancho, alto); // Crea una nueva superficie de dibujo con el tamaño especificado
+		Ventana ventana = new Ventana(nombre, dibujo); // Crea una nueva ventana con el título y la superficie de dibujo
+		
+	}
+	
+	private static void actualizar() {
+		
+	}
+	
+	private static void disegnar() {
+	
 	}
 }
