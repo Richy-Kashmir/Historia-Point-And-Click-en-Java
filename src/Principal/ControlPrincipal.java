@@ -39,9 +39,6 @@ public class ControlPrincipal {
 		dibujo.dibujar(); // Llama al método dibujar de la superficie de dibujo para realizar las operaciones de dibujo
 		fps++; // Incrementa el contador de fotogramas por segundo
 	}
-	
-	
-	// Temporizador para controlar las actualizaciones y los fotogramas por segundo
 	static void ejecutar() {
 
 	    final int NS_POR_SEGUNDO = 1000000000; 
@@ -51,7 +48,7 @@ public class ControlPrincipal {
 	    long referenciaActualizacion = System.nanoTime(); 
 	    long referenciaContador = System.nanoTime();
 
-	    double delta = 0;  // Diferencia acumulada para controlar las actualizaciones
+	    double delta = 0; 
 
 	    aps = 0;
 	    fps = 0;
