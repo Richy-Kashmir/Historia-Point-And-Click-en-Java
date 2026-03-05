@@ -14,6 +14,7 @@ public class ControlPrincipal {
 		inicializar();
 	}
 	
+	@SuppressWarnings("unused")
 	private static void detener() {
 		
 		if (dibujo != null) {
