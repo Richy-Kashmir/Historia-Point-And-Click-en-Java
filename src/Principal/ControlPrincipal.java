@@ -25,14 +25,9 @@ public class ControlPrincipal {
 	}
 	
 	private static void inicializar() {
-<<<<<<< HEAD
-	    dibujo = new Dibujo(800, 600); // ahora sí asigna a la variable estática
-	    new Ventana("Detective Misterioso", dibujo);
-=======
 		long tiempoActual = System.currentTimeMillis();
 	    dibujo = new Dibujo(800, 600, tiempoActual); // ahora sí asigna a la variable estática
 	    new Ventana("El Cuervo", dibujo);
->>>>>>> 3d2b2f2c0be8cc2d03043330e3d8663b08fb04f4
 
 	    // Forzar creación del BufferStrategy después de que la ventana sea visible
 	    dibujo.createBufferStrategy(3);
@@ -41,8 +36,6 @@ public class ControlPrincipal {
 	private static void actualizar() {
 	
 		dibujo.actualizar(); // Llama al método actualizar de la superficie de dibujo para realizar las operaciones de actualización
-<<<<<<< HEAD
-=======
 		
 		if (!dibujo.cambioRealizado) {
             long tiempoTranscurrido = System.currentTimeMillis() - dibujo.getTiempoInicio();
@@ -50,7 +43,6 @@ public class ControlPrincipal {
                 dibujo.cambiarAImagenSecundaria();
             }
         }
->>>>>>> 3d2b2f2c0be8cc2d03043330e3d8663b08fb04f4
 		aps++; // Incrementa el contador de actualizaciones por segundo
 		
 	}

@@ -7,12 +7,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-<<<<<<< HEAD
-import herramientas.TransformadorImagenes;
-import herramientas.CargadorRecursos;
-import control.Raton;
-import control.raton;
-=======
 import control.Raton;
 import herramientas.CargadorRecursos;
 import herramientas.Sonido;
@@ -20,28 +14,12 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.AlphaComposite;
 
->>>>>>> 3d2b2f2c0be8cc2d03043330e3d8663b08fb04f4
 
 public class Dibujo extends Canvas {
 
     private static final long serialVersionUID = 1L;
     private BufferStrategy buffer;
     private Graphics graficos;
-<<<<<<< HEAD
-    private BufferedImage imagen;
-    private Raton raton;
-    
-
-    public Dibujo(int ancho, int alto) {
-        setPreferredSize(new Dimension(ancho, alto));
-        imagen = CargadorRecursos.cargarImagen("recursos/imagenes/detective.jpeg"); // carga tu rojo.png o Oficina.jpeg
-   
-        imagen = TransformadorImagenes.escalarImagen(imagen, 0.5); // Escala la imagen a la mitad de su tamaño original
-    
-        raton = new Raton(this); // Inicializa el objeto ratón para rastrear la posición del cursor
-    }
-
-=======
     private Raton raton;
     private BufferedImage imagenInicial;
     private BufferedImage imagenSecundaria;
@@ -131,15 +109,11 @@ public class Dibujo extends Canvas {
 
     // FIN CLAUDE
     
->>>>>>> 3d2b2f2c0be8cc2d03043330e3d8663b08fb04f4
     public void actualizar() {
     	raton.actualizar(this); //
     	
 	}
     
-<<<<<<< HEAD
-    
-=======
     public void cambiarAImagenSecundaria() {
         imagenActual = imagenSecundaria;
         cambioRealizado = true;
@@ -160,7 +134,6 @@ public class Dibujo extends Canvas {
             musicaFondo.detener();
         }
     }
->>>>>>> 3d2b2f2c0be8cc2d03043330e3d8663b08fb04f4
     
     public void dibujar() {
         buffer = getBufferStrategy();
@@ -172,15 +145,6 @@ public class Dibujo extends Canvas {
         graficos = buffer.getDrawGraphics();
         // primero el fondo
         graficos.setColor(Color.BLACK);
-<<<<<<< HEAD
-        graficos.fillRect(0, 0, 800, 600);
-
-        // luego la imagen
-        if (imagen != null) {
-            graficos.drawImage(imagen, 0, 0, null);
-        }
-       
-=======
         // usar dimensiones dinámicas de la ventana/canvas
         int ancho = getWidth();
         int alto = getHeight();
@@ -220,7 +184,6 @@ public class Dibujo extends Canvas {
         
         
         
->>>>>>> 3d2b2f2c0be8cc2d03043330e3d8663b08fb04f4
         raton.dibujar(graficos); // Dibuja la posición del ratón en la pantalla
         graficos.dispose();
         buffer.show();
