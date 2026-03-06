@@ -1,18 +1,19 @@
 package Graficos;
 
-import herramientas.TransformadorImagenes;
+import java.awt.AlphaComposite;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+
 import control.Raton;
 import herramientas.CargadorRecursos;
 import herramientas.Sonido;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.AlphaComposite;
+import herramientas.TransformadorImagenes;
 
 
 public class Dibujo extends Canvas {
