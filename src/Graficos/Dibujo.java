@@ -3,6 +3,7 @@ package Graficos;
 import herramientas.TransformadorImagenes;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
@@ -11,7 +12,9 @@ import control.Raton;
 import herramientas.CargadorRecursos;
 import herramientas.Sonido;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.AlphaComposite;
 
 
@@ -28,6 +31,7 @@ public class Dibujo extends Canvas {
     public boolean cambioRealizado = false;
 	private long tiempoInicio;
 	private Sonido musicaFondo;
+	
 	// Botones invisibles sobre el menú
 	private int jugarX = 270, jugarY = 170, jugarAncho = 260, jugarAlto = 65;
 	private int opcionesX = 270, opcionesY = 245, opcionesAncho = 260, opcionesAlto = 65;
@@ -37,6 +41,7 @@ public class Dibujo extends Canvas {
 	private boolean hoverJugar = false;
 	private boolean hoverOpciones = false;
 	private boolean hoverSalir = false;
+	private BufferedImage imagenLupa;
     
 
     public Dibujo(int ancho, int alto, long tiempoInicio) {
@@ -51,21 +56,53 @@ public class Dibujo extends Canvas {
         imagenOpciones = CargadorRecursos.cargarImagen("recursos/imagenes/opciones.PNG");
         
 	        	 // Escala la imagen a la mitad de su tamaño original
-			imagenActual = imagenInicial; // Comienza con la imagen inicial
+		imagenActual = imagenInicial; // Comienza con la imagen inicial
         
-        
+		
+			// RICHARD
+			// Carga la imagen de la lupa para el cursor personalizado
+		imagenLupa = CargadorRecursos.cargarImagen("recursos/imagenes/lupa.png");
 
+		if (imagenLupa != null) {
+
+		    java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
+
+		    java.awt.Point puntoHotspot = new java.awt.Point(0, 0);
+
+		    java.awt.Cursor cursorLupa = toolkit.createCustomCursor(
+		            imagenLupa,
+		            puntoHotspot,
+		            "CursorLupa"
+		    );
+
+		    setCursor(cursorLupa);
+
+		} else {
+		    System.out.println("Error cargando la imagen de la lupa");
+		}
+		
+		
+		// RICHARD
+		// Para hacer el cursor invisible, creamos una imagen transparente de 1x1 píxel y la usamos como cursor
+		BufferedImage cursorInvisible = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
+		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorInvisible,new Point(0,0),"blank");
+		setCursor(blankCursor);
+		
        
-        musicaFondo = new Sonido("recursos/musica/Custodes Abyssi.wav"); // Carga la música de fondo
+		// Inicializa el objeto Sonido para la música de fondo
+		musicaFondo = new Sonido("recursos/musica/Custodes Abyssi.wav"); // Carga la música de fondo
         raton = new Raton(this); // Inicializa el objeto ratón para rastrear la posición del cursor
     
-        // CLAUDE - Agrega un MouseListener para detectar clics en los botones invisibles
+        // Agrega un MouseListener para detectar clics en los botones invisibles
+        
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 if (cambioRealizado) {
-                    int mx = e.getX();
-                    int my = e.getY();
+                   
+                		int mx = e.getX();
+                		int my = e.getY();
+                    
                     if (mx >= jugarX && mx <= jugarX + jugarAncho &&
                         my >= jugarY && my <= jugarY + jugarAlto) {
                         System.out.println("JUGAR presionado");
@@ -74,11 +111,7 @@ public class Dibujo extends Canvas {
                     if (mx >= opcionesX && mx <= opcionesX + opcionesAncho &&
                         my >= opcionesY && my <= opcionesY + opcionesAlto) {
                         System.out.println("OPCIONES presionado");
-                        
-                        
-                        
-                        
-                        
+                           
                         // aquí va la acción de opciones
                     }
                     if (mx >= salirX && mx <= salirX + salirAncho &&
@@ -93,6 +126,7 @@ public class Dibujo extends Canvas {
         });
 
         // Efecto hover al mover el mouse
+        
         this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             @Override
             public void mouseMoved(java.awt.event.MouseEvent e) {
@@ -107,7 +141,7 @@ public class Dibujo extends Canvas {
         });
     }
 
-    // FIN CLAUDE
+   
     
     public void actualizar() {
     	raton.actualizar(this); //
@@ -135,6 +169,7 @@ public class Dibujo extends Canvas {
         }
     }
     
+    
     public void dibujar() {
         buffer = getBufferStrategy();
         if (buffer == null) {
@@ -156,7 +191,7 @@ public class Dibujo extends Canvas {
         }
        
         // Si el cambio a la imagen secundaria ya se ha realizado, dibuja los botones invisibles y el efecto hover
-        //CLAUDE
+      
         if (cambioRealizado) {
             Graphics2D g2d = (Graphics2D) graficos;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -183,9 +218,15 @@ public class Dibujo extends Canvas {
         }
         
         
-        
-        raton.dibujar(graficos); // Dibuja la posición del ratón en la pantalla
-        graficos.dispose();
-        buffer.show();
+     raton.dibujar(graficos);
+
+     // RICHARD
+     // dibujar lupa
+     Point p = raton.getPosicion();
+     graficos.drawImage(imagenLupa, (int)p.getX()-32, (int)p.getY()-32, 64, 64, null);
+
+     graficos.dispose();
+     buffer.show();
+
     }
 }
