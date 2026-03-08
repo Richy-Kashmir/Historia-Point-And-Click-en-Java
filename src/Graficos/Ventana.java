@@ -14,7 +14,9 @@ public class Ventana extends JFrame {
 		this.setTitle(nombre);                                    // Da titulo a la ventana
 		this.setResizable(false);                                // Para que la pantalla no cambie de tamaño
 		this.setLayout(new BorderLayout());                     // Es ordenar los componentes dentro de la ventana
-		this.add(superficieDibujo, null);                      // Agrega la superficie de dibujo a la ventana
+		if (superficieDibujo != null) {                       
+            this.add(superficieDibujo, BorderLayout.CENTER);   // Condición para permitir null inicialmente
+        }                     
 		this.pack();                                          // Ajusta el tamaño de la ventana al tamaño de su contenido
 		this.setLocationRelativeTo(null);                    // Centra la ventana en la pantalla
 		this.setVisible(true);                              // Hace que la ventana sea visible
