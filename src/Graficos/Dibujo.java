@@ -227,7 +227,7 @@ public class Dibujo extends Canvas {
     // ------------------------------------------------------------------------------------------ //
     
     public void cambiarAImagenOficina() {
-		imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina.JPEG");
+		imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina .JPEG");
 		cambioRealizado = true;  // Para mantener el flujo del programa y permitir hover (clics en los botones invisibles)
 		detenerMusica();  // Por si acaso
 		musicaFondo = new Sonido("recursos/musica/Corium.wav"); 
@@ -264,8 +264,10 @@ public class Dibujo extends Canvas {
     public void dibujar() {
     	if (!isDisplayable()) // Verifica si el canvas está listo para dibujar
     		return;
+    	
+    	try { // try-catch para evitar errores de dibujo si el canvas no está completamente inicializado
         buffer = getBufferStrategy(); // el buffer es lo que se va a mostrar en pantalla y se obtiene del canvas
-        if (buffer == null) {
+        if (buffer == null) { // Si el buffer no existe, lo creamos
             createBufferStrategy(3);
             return;
         }
@@ -291,10 +293,10 @@ public class Dibujo extends Canvas {
 
             // Brillo dorado al hacer hover sobre cada botón
             if (hoverJugar) {
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
-                g2d.setColor(new Color(255, 200, 50));
-                g2d.fillRoundRect(jugarX, jugarY, jugarAncho, jugarAlto, 15, 15);
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f)); // 25% de transparencia para el efecto de brillo
+                g2d.setColor(new Color(255, 200, 50)); // Color para el menu hover (dorado)
+                g2d.fillRoundRect(jugarX, jugarY, jugarAncho, jugarAlto, 15, 15); // El redondeado de bordes
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // Restaurar opacidad completa para no afectar otros elementos
             }
             if (hoverOpciones) {
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
@@ -317,5 +319,9 @@ public class Dibujo extends Canvas {
         graficos.drawImage(imagenLupa, (int)p.getX()-32, (int)p.getY()-32, 64, 64, null); // Dibuja la imagen de la lupa centrada en la posición del ratón
         graficos.dispose();
         buffer.show();
+        
+    	 } catch (Exception e) {
+    	        return;
     }
+}
 }
