@@ -1,4 +1,6 @@
 package Principal;
+import java.awt.BorderLayout;
+
 import Graficos.Dibujo;
 import Graficos.Ventana;
 
@@ -8,11 +10,15 @@ public class ControlPrincipal {
 	private  static int aps = 0; // Variable para contar las actualizaciones por segundo
 	private static int fps = 0; // Variable para contar los fotogramas por segundo
 	
+// -------------------------------------------------------------------------------------------------------- //
 	
 	static void iniciar() {
 		enfuncionamiento = true;
 		inicializar();
 	}
+	
+	// ------------------------------------------------------------------------------------------------ //
+	
 	
 	@SuppressWarnings("unused")
 	private static void detener() {
@@ -24,14 +30,30 @@ public class ControlPrincipal {
 		System.exit(0); // Termina el programa
 	}
 	
+	// ------------------------------------------------------------------------------------------------ //
+	
 	private static void inicializar() {
 		long tiempoActual = System.currentTimeMillis();
-	    dibujo = new Dibujo(800, 600, tiempoActual); // ahora sí asigna a la variable estática
-	    new Ventana("El Cuervo", dibujo);
 
-	    // Forzar creación del BufferStrategy después de que la ventana sea visible
-	    dibujo.createBufferStrategy(3);
+        // Aquí cambié: Creo la ventana primero sin canvas, luego paso la ventana a Dibujo, y agrego manualmente
+        Ventana ventana = new Ventana("El Cuervo", null);  // Paso null temporalmente
+        dibujo = new Dibujo(800, 600, tiempoActual, ventana);  // Paso la ventana
+        ventana.add(dibujo, BorderLayout.CENTER);  // Agrego el dibujo manualmente
+        ventana.pack();  // Ajusta el tamaño
+        ventana.setLocationRelativeTo(null);
+        ventana.setVisible(true);
+
+        // Forzar creación del BufferStrategy después de que la ventana sea visible
+        dibujo.createBufferStrategy(3);
 	}
+	
+	// ------------------------------------------------------------------------------------------------ //
+	
+	public static void setDibujo(Dibujo nuevoDibujo) {
+		dibujo = nuevoDibujo;
+	}
+
+	// ------------------------------------------------------------------------------------------------ //
 	
 	private static void actualizar() {
 	
@@ -47,11 +69,18 @@ public class ControlPrincipal {
 		
 	}
 	
+	// ------------------------------------------------------------------------------------------------ //
+	
 	private static void dibujar() {
+		if (dibujo == null || !dibujo.isDisplayable()) // Verifica si el dibujo es nulo 
+			return;
 		// Aquí se pueden agregar las operaciones de dibujo necesarias para el programa
 		dibujo.dibujar(); // Llama al método dibujar de la superficie de dibujo para realizar las operaciones de dibujo
 		fps++; // Incrementa el contador de fotogramas por segundo
 	}
+	
+	// ------------------------------------------------------------------------------------------------ //
+	
 	static void ejecutar() {
 
 	    final int NS_POR_SEGUNDO = 1000000000; 
