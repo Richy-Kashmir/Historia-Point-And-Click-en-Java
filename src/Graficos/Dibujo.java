@@ -48,6 +48,7 @@ public class Dibujo extends Canvas {
 	private JFrame ventana;
 	private boolean enPantallaOpciones = false;
 	private BufferedImage imagenLupa;
+	private boolean enPantallaDelJuego = false;
     
 
     public Dibujo(int ancho, int alto, long tiempoInicio, JFrame ventana) {
@@ -229,6 +230,7 @@ public class Dibujo extends Canvas {
     public void cambiarAImagenOficina() {
 		imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina .JPEG");
 		cambioRealizado = true;  // Para mantener el flujo del programa y permitir hover (clics en los botones invisibles)
+		enPantallaDelJuego = true; // En la pantalla del juego, no se muestran los botones 
 		detenerMusica();  // Por si acaso
 		musicaFondo = new Sonido("recursos/musica/Corium.wav"); 
 		if (musicaFondo != null) {
@@ -287,7 +289,7 @@ public class Dibujo extends Canvas {
        
         // Si el cambio a la imagen secundaria ya se ha realizado, dibuja los botones invisibles y el efecto hover
    
-        if (cambioRealizado) {
+        if (cambioRealizado && !enPantallaDelJuego) { // Solo dibuja los botones y el efecto hover si estamos en el menú (No en el juego)
             Graphics2D g2d = (Graphics2D) graficos; // Para efectos de transparencia y suavizado
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // para redondear los bordes 
 
