@@ -3,10 +3,13 @@ package Graficos;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -44,6 +47,7 @@ public class Dibujo extends Canvas {
 	private boolean hoverSalir = false;
 	private JFrame ventana;
 	private boolean enPantallaOpciones = false;
+	private BufferedImage imagenLupa;
     
 
     public Dibujo(int ancho, int alto, long tiempoInicio, JFrame ventana) {
@@ -61,7 +65,34 @@ public class Dibujo extends Canvas {
 	        	 // Escala la imagen a la mitad de su tamaño original
 			imagenActual = imagenInicial; // Comienza con la imagen inicial
         
-        
+			
+			imagenLupa = CargadorRecursos.cargarImagen("recursos/imagenes/lupa.png");
+			
+			if (imagenLupa != null) {
+
+			    java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
+
+			    java.awt.Point puntoHotspot = new java.awt.Point(0, 0);
+
+			    java.awt.Cursor cursorLupa = toolkit.createCustomCursor(
+			            imagenLupa,
+			            puntoHotspot,
+			            "CursorLupa"
+			    );
+
+			    setCursor(cursorLupa);
+
+			} else {
+			    System.out.println("Error cargando la imagen de la lupa");
+			}
+			
+			
+		
+			// Para hacer el cursor invisible, creamos una imagen transparente de 1x1 píxel y la usamos como cursor
+			BufferedImage cursorInvisible = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
+			Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorInvisible,new Point(0,0),"blank"); 
+			setCursor(blankCursor);
+			
 
        
         musicaFondo = new Sonido("recursos/musica/Custodes Abyssi.wav"); // Carga la música de fondo
@@ -196,7 +227,7 @@ public class Dibujo extends Canvas {
     // ------------------------------------------------------------------------------------------ //
     
     public void cambiarAImagenOficina() {
-		imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina.jpeg");
+		imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina.JPEG");
 		cambioRealizado = true;  // Para mantener el flujo del programa y permitir hover (clics en los botones invisibles)
 		detenerMusica();  // Por si acaso
 		musicaFondo = new Sonido("recursos/musica/Corium.wav"); 
@@ -282,6 +313,8 @@ public class Dibujo extends Canvas {
         
         
         raton.dibujar(graficos); // Dibuja la posición del ratón en la pantalla
+        Point p = raton.getPosicion();
+        graficos.drawImage(imagenLupa, (int)p.getX()-32, (int)p.getY()-32, 64, 64, null); // Dibuja la imagen de la lupa centrada en la posición del ratón
         graficos.dispose();
         buffer.show();
     }
