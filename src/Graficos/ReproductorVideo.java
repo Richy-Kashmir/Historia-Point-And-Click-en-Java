@@ -20,31 +20,7 @@ public class ReproductorVideo extends JPanel {
     private final Runnable cuandoTermina;
     private String rutaVideo;
     private boolean yaTermino = false;
-    
-    // --------------------------------------------------------------------------------- //
-    
-    private final MouseAdapter skipPorClic = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) { // Detecta cualquier clic para saltar el video
-            System.out.println("Video saltado por clic");
-            ejecutarCallback();
-        }
-        };
-        
-    // --------------------------------------------------------------------------------- //
-        
-        private final KeyAdapter skipPorTeclado = new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) { // Detecta la tecla Enter para saltar el video
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    System.out.println("Video saltado por Enter");
-                    ejecutarCallback();
-                }
-            }
-        };
 
-        //-------------------------------------------------------------------------------- //
-        
     public ReproductorVideo(String rutaVideo, Runnable callbackTerminado) {
         super(new BorderLayout()); // Usa BorderLayout para que el video ocupe toda la pantalla
         setBackground(Color.BLACK);
@@ -53,31 +29,39 @@ public class ReproductorVideo extends JPanel {
 
         componente = new EmbeddedMediaPlayerComponent();
         add(componente, BorderLayout.CENTER);
-        
-        componente.addMouseListener(skipPorClic); // Añade el listener de clic al componente principal
-        componente.videoSurfaceComponent().addMouseListener(skipPorClic); // Añade el listener de clic a la superficie de video para asegurar que se detecten los clics en toda el área del video
-        componente.addKeyListener(skipPorTeclado);
-        componente.videoSurfaceComponent().addKeyListener(skipPorTeclado);
 
         // Añadir listeners de ratón y teclado al panel para permitir saltar el video
         setFocusable(true);
-        componente.videoSurfaceComponent().requestFocusInWindow();
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("Video saltado por clic");
+                ejecutarCallback();
+            }
+        });
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    System.out.println("Video saltado por Enter");
+                    ejecutarCallback();
+                }
+            }
+        });
 
         MediaPlayer mp = componente.mediaPlayer();
 
-        mp.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() { // Escucha el evento de finalización del video
-          
-        	
-        	@Override
-            public void finished(MediaPlayer mediaPlayer) { // Cuando el video termina, ejecuta el callback
+        mp.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() { // Escucha eventos del reproductor
+            @Override
+            public void finished(MediaPlayer mediaPlayer) {
+                // Ejecutar el callback en el hilo EDT
                 SwingUtilities.invokeLater(() -> {
                     ejecutarCallback();
                 });
             }
         });
     }
-
-
 
     // Método que se encarga de ejecutar el callback una sola vez
     private void ejecutarCallback() {
@@ -100,23 +84,13 @@ public class ReproductorVideo extends JPanel {
     }
 
     public void detener() {
-        if (componente != null) { // Verificamos que el componente no sea nulo antes de intentar detenerlo
-        	EmbeddedMediaPlayerComponent comp = componente;
+        if (componente != null) {
+            componente.mediaPlayer().controls().stop(); // Detiene la reproducción
+            componente.mediaPlayer().release(); // Libera los recursos del reproductor
+            componente.release(); // Libera los recursos del componente
             componente = null;
-            try {
-                comp.mediaPlayer().controls().stop();  // Detiene la reproducción del video
-            } catch (Exception ignored) {}
-
-            // 
-            new Thread(() -> { // Usamos un hilo separado para liberar los recursos después de detener el video
-                try {
-                    Thread.sleep(200); // Pequeña espera para que vlcj termine de parar
-                    comp.mediaPlayer().release();
-                    comp.release();
-                } catch (Exception ignored) {}
-            }).start();
         }
-            }
+    }
 
     @Override
     public void removeNotify() {
