@@ -52,4 +52,8 @@ public class Sonido {
             System.out.println("Música detenida.");
         }
     }
+    
+    public boolean isReproduciendo() {
+        return clip != null && clip.isRunning();
+    }
 }
