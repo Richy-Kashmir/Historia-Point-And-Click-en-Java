@@ -54,19 +54,24 @@ public class Dibujo extends Canvas {
 	private Sonido musicaJuego;
 
 	
-	// - CLAUDE -
-    // -----------------------------------------------------------------------
-    // Aquí he agregado: zonas de clic para navegar entre pantallas de oficina
-    // -----------------------------------------------------------------------
 
-    // Zona ABAJO: franja inferior completa y delgada (Oficina1 <-> Oficina2)
-    private int zonaAbajoX = 0, zonaAbajoY = 520, zonaAbajoAncho = 800, zonaAbajoAlto = 70;
+    // ----------------------------------------------------------------------- //
+    // Zonas de clic para navegar entre pantallas de oficina
+    // ----------------------------------------------------------------------- //
 
-    // Zona DERECHA: franja lateral derecha (Oficina2 -> Oficina3 / Oficina3 -> Oficina2)
-    private int zonaDerechaX = 700, zonaDerechaY = 150, zonaDerechaAncho = 100, zonaDerechaAlto = 300;
+    // Oficina 1 zona inferior  (Oficina1 <-> Oficina2)
+	private int o1_abajoX = 5, o1_abajoY = 500, o1_abajoW = 800, o1_abajoH = 800;
 
-    // Zona IZQUIERDA: franja lateral izquierda (Oficina2 -> Oficina4 / Oficina4 -> Oficina2)
-    private int zonaIzquierdaX = 0, zonaIzquierdaY = 150, zonaIzquierdaAncho = 100, zonaIzquierdaAlto = 300;
+    // Oficina 2 zona inferior (Oficina2 -> Caulquier otra oficina / Cualquier otra oficina -> Oficina2)
+	private int o2_abajoX = 5, o2_abajoY = 500, o2_abajoW = 800, o2_abajoH = 800;
+	private int o2_derX = 550, o2_derY = 150, o2_derW = 100, o2_derH = 280;
+	private int o2_izqX = 130, o2_izqY = 150, o2_izqW = 100, o2_izqH = 280;
+
+    // Oficina 3 zona izquierda (Oficina2 -> Oficina3 / Oficina3 -> Oficina2)
+	private int o3_izqX = 5, o3_izqY = 0, o3_izqW = 120, o3_izqH = 800;
+	
+	// Ofina 4 zona derecha (Oficina2 -> Oficina4 / Oficina4 -> Oficina2)
+	private int o4_derX = 700, o4_derY = 0, o4_derW = 800, o4_derH = 800;
 	
     
 
@@ -122,9 +127,9 @@ public class Dibujo extends Canvas {
 
         raton = new Raton(this); // Inicializa el objeto ratón para rastrear la posición del cursor
 
-        // ---------------------------------------------------------------
+        // --------------------------------------------------------------- //
         // Listener de clics
-        // ---------------------------------------------------------------
+        // --------------------------------------------------------------- //
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -143,15 +148,19 @@ public class Dibujo extends Canvas {
                             detenerMusica();
                             String rutaVideo = "recursos/Video/Intro.mp4";
 
+                            
+                            // Es la creación de un panel del video y se le pasa una función Runnable (Para ejecutar el video)
                             ReproductorVideo panelVideo = new ReproductorVideo(rutaVideo, new Runnable() {
                                 @Override
                                 public void run() {
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        @Override
+                                	
+                                	// invorelater para asegurarnos de que el cambio de pantalla se ejecute en el hilo de la interfaz gráfica
+                                	
+                                    SwingUtilities.invokeLater(new Runnable() {  
                                         public void run() {
                                             ventana.getContentPane().removeAll();
                                             Dibujo nuevoDibujo = new Dibujo(ventana.getWidth(), ventana.getHeight(),
-                                                                            System.currentTimeMillis(), ventana);
+                                                                            System.currentTimeMillis(), ventana); // currentTimeMillis para reiniciar el tiempo de inicio (para la duración de la presentación)
                                             nuevoDibujo.cambiarAOficina1();
                                             ventana.getContentPane().add(nuevoDibujo);
                                             ventana.revalidate();
@@ -167,10 +176,10 @@ public class Dibujo extends Canvas {
                                 }
                             });
 
-                            ventana.getContentPane().removeAll();
-                            ventana.getContentPane().add(panelVideo);
-                            ventana.revalidate();
-                            ventana.repaint();
+                            ventana.getContentPane().removeAll();  // Elimina el contenido actual (menú) para mostrar el video
+                            ventana.getContentPane().add(panelVideo); // Agrega el panel del video a la ventana
+                            ventana.revalidate();  // Refresca la ventana para mostrar el nuevo contenido (es decir el video)
+                            ventana.repaint(); // para que se actualice la ventana y se muestre el video
                         }
 
                         // Botón OPCIONES
@@ -194,62 +203,65 @@ public class Dibujo extends Canvas {
                         }
                     }
                     
-                    // - CLAUDE -
 
-                    // ---------------------------------------------------------------
-                    // Aquí he agregado: navegación entre pantallas de oficina
-                    // ---------------------------------------------------------------
-                    if (enPantallaDelJuego) {
+                    // --------------------------------------------------------------- //
+                    // Navegación entre pantallas de oficina
+                    // --------------------------------------------------------------- //
+                    if (pantallaOficinaActual == 1) {
 
-                        boolean clickAbajo     = (mx >= zonaAbajoX     && mx <= zonaAbajoX     + zonaAbajoAncho     && my >= zonaAbajoY     && my <= zonaAbajoY     + zonaAbajoAlto);
-                        boolean clickDerecha   = (mx >= zonaDerechaX   && mx <= zonaDerechaX   + zonaDerechaAncho   && my >= zonaDerechaY   && my <= zonaDerechaY   + zonaDerechaAlto);
-                        boolean clickIzquierda = (mx >= zonaIzquierdaX && mx <= zonaIzquierdaX + zonaIzquierdaAncho && my >= zonaIzquierdaY && my <= zonaIzquierdaY + zonaIzquierdaAlto);
+                        if (mx >= o1_abajoX && mx <= o1_abajoX + o1_abajoW &&
+                            my >= o1_abajoY && my <= o1_abajoY + o1_abajoH) {
 
-                        // --- Desde OFICINA 1 (Oficina.jpeg) ---
-                        if (pantallaOficinaActual == 1) {
-                            if (clickAbajo) {
-                                System.out.println("Oficina1 -> Oficina2");
-                                cambiarAOficina2();
-                            }
+                            cambiarAOficina2();
+                        }
+                    }
+
+                    // OFICINA 2
+                    else if (pantallaOficinaActual == 2) {
+
+                        if (mx >= o2_abajoX && mx <= o2_abajoX + o2_abajoW &&
+                            my >= o2_abajoY && my <= o2_abajoY + o2_abajoH) {
+
+                            cambiarAOficina1();
                         }
 
-                        // --- Desde OFICINA 2 (vértebra de navegación) ---
-                        else if (pantallaOficinaActual == 2) {
-                            if (clickAbajo) {
-                                System.out.println("Oficina2 -> Oficina1");
-                                cambiarAOficina1();
-                            }
-                            if (clickDerecha) {
-                                System.out.println("Oficina2 -> Oficina3");
-                                cambiarAOficina3();
-                            }
-                            if (clickIzquierda) {
-                                System.out.println("Oficina2 -> Oficina4");
-                                cambiarAOficina4();
-                            }
+                        if (mx >= o2_derX && mx <= o2_derX + o2_derW &&
+                            my >= o2_derY && my <= o2_derY + o2_derH) {
+
+                            cambiarAOficina3();
                         }
 
-                        // --- Desde OFICINA 3 ---
-                        else if (pantallaOficinaActual == 3) {
-                            if (clickIzquierda) {
-                                System.out.println("Oficina3 -> Oficina2");
-                                cambiarAOficina2();
-                            }
-                        }
+                        if (mx >= o2_izqX && mx <= o2_izqX + o2_izqW &&
+                            my >= o2_izqY && my <= o2_izqY + o2_izqH) {
 
-                        // --- Desde OFICINA 4 ---
-                        else if (pantallaOficinaActual == 4) {
-                            if (clickDerecha) {
-                                System.out.println("Oficina4 -> Oficina2");
-                                cambiarAOficina2();
-                            }
+                            cambiarAOficina4();
                         }
+                    }
+
+                    // OFICINA 3
+                    else if (pantallaOficinaActual == 3) {
+
+                        if (mx >= o3_izqX && mx <= o3_izqX + o3_izqW &&
+                            my >= o3_izqY && my <= o3_izqY + o3_izqH) {
+
+                            cambiarAOficina2();
+                        }
+                    }
+
+                    // OFICINA 4
+                    else if (pantallaOficinaActual == 4) {
+
+                        if (mx >= o4_derX && mx <= o4_derX + o4_derW &&
+                            my >= o4_derY && my <= o4_derY + o4_derH) {
+
+                            cambiarAOficina2();
+                        }
+                    
                     }
                 }
             }
         });
         
-        // - CLAUDE -
 
         // Listener de hover (solo para el menú)
         this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -450,25 +462,35 @@ public class Dibujo extends Canvas {
         }
         
         
+        // Las posiciones de clic para navegar entre pantallas de oficina.
         
         if (enPantallaDelJuego) {
+
             Graphics2D g2d = (Graphics2D) graficos;
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.20f));
-            g2d.setColor(new Color(100, 200, 255)); // Azul claro semitransparente
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f)); // 35% de transparencia para el efecto de superposición	
+            g2d.setColor(new Color (255,255,255,100));
+           
+            
 
             if (pantallaOficinaActual == 1) {
-                g2d.fillRect(zonaAbajoX, zonaAbajoY, zonaAbajoAncho, zonaAbajoAlto);
-            } else if (pantallaOficinaActual == 2) {
-                g2d.fillRect(zonaAbajoX,     zonaAbajoY,     zonaAbajoAncho,     zonaAbajoAlto);
-                g2d.fillRect(zonaDerechaX,   zonaDerechaY,   zonaDerechaAncho,   zonaDerechaAlto);
-                g2d.fillRect(zonaIzquierdaX, zonaIzquierdaY, zonaIzquierdaAncho, zonaIzquierdaAlto);
-            } else if (pantallaOficinaActual == 3) {
-                g2d.fillRect(zonaIzquierdaX, zonaIzquierdaY, zonaIzquierdaAncho, zonaIzquierdaAlto);
-            } else if (pantallaOficinaActual == 4) {
-                g2d.fillRect(zonaDerechaX, zonaDerechaY, zonaDerechaAncho, zonaDerechaAlto);
+                g2d.fillRect(o1_abajoX, o1_abajoY, o1_abajoW, o1_abajoH);
             }
-            
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+
+            else if (pantallaOficinaActual == 2) {
+                g2d.fillRect(o2_abajoX, o2_abajoY, o2_abajoW, o2_abajoH);
+                g2d.fillRect(o2_derX, o2_derY, o2_derW, o2_derH);
+                g2d.fillRect(o2_izqX, o2_izqY, o2_izqW, o2_izqH); 
+            }
+
+            else if (pantallaOficinaActual == 3) {
+                g2d.fillRect(o3_izqX, o3_izqY, o3_izqW, o3_izqH);
+            }
+
+            else if (pantallaOficinaActual == 4) {
+                g2d.fillRect(o4_derX, o4_derY, o4_derW, o4_derH);
+            }
+
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
         
         
