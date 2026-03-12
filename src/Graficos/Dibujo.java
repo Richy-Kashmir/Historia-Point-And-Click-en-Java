@@ -51,36 +51,39 @@ public class Dibujo extends Canvas {
 	private boolean enPantallaDelJuego = false;
 	
 	private int pantallaOficinaActual = 0;
-	private Sonido musicaJuego;
+	private Sonido musicaOficina;
+	private Sonido musicaPuerto;
 
 	
-	// - CLAUDE -
-    // -----------------------------------------------------------------------
-    // Aquí he agregado: zonas de clic para navegar entre pantallas de oficina
-    // -----------------------------------------------------------------------
 
-    // Zona ABAJO: franja inferior completa y delgada (Oficina1 <-> Oficina2)
-	// OFICINA 1
+    // ----------------------------------------------------------------------- //
+    // Zonas de clic para navegar entre pantallas de oficina
+    // ----------------------------------------------------------------------- //
+
+    // Oficina 1 zona inferior  (Oficina1 <-> Oficina2)
 	private int o1_abajoX = 5, o1_abajoY = 500, o1_abajoW = 800, o1_abajoH = 800;
 
-	// OFICINA 2
+    // Oficina 2 zona inferior (Oficina2 -> Caulquier otra oficina más el puerto1 / Cualquier otra oficina -> Oficina2)
 	private int o2_abajoX = 5, o2_abajoY = 500, o2_abajoW = 800, o2_abajoH = 800;
 	private int o2_derX = 550, o2_derY = 150, o2_derW = 100, o2_derH = 280;
 	private int o2_izqX = 130, o2_izqY = 150, o2_izqW = 100, o2_izqH = 280;
+	private int o2_arribaX = 360, o2_arribaY = 150, o2_arribaW = 80, o2_arribaH = 220; // Para ir al puerto1 
 
-	// OFICINA 3
+    // Oficina 3 zona izquierda (Oficina2 -> Oficina3 / Oficina3 -> Oficina2)
 	private int o3_izqX = 5, o3_izqY = 0, o3_izqW = 120, o3_izqH = 800;
-
-	// OFICINA 4
+	
+	// Ofina 4 zona derecha (Oficina2 -> Oficina4 / Oficina4 -> Oficina2)
 	private int o4_derX = 700, o4_derY = 0, o4_derW = 800, o4_derH = 800;
-	// OBJETO OCULTO EJEMPLO
-	private int objeto1X = 420;
-	private int objeto1Y = 310;
-	private int objeto1W = 80;
-	private int objeto1H = 80;
-
-	private boolean hoverObjeto1 = false;
-	private boolean objetoEncontrado = false;
+	
+	// Puerto 1 zona centro (Puerto1 -> Puerto2)
+	private int p1_centroX = 200, p1_centroY = 180, p1_centroW = 400, p1_centroH = 240;
+	
+	// Puerto 1 zona inferior (Puerto1 -> Oficina2)
+	private int p1_abajoX = 0,   p1_abajoY = 500, p1_abajoW = 800, p1_abajoH = 100;
+	
+	// Puerto 2 zona inferior (Puerto2 -> Puerto1)
+	private int p2_abajoX = 0,   p2_abajoY = 500, p2_abajoW = 800, p2_abajoH = 100;
+    
 
     public Dibujo(int ancho, int alto, long tiempoInicio, JFrame ventana) {
         setPreferredSize(new Dimension(ancho, alto));
@@ -130,13 +133,15 @@ public class Dibujo extends Canvas {
         musicaFondo = new Sonido("recursos/musica/Custodes Abyssi.wav"); // Carga la música de fondo
        
         
-        musicaJuego = new Sonido("recursos/musica/Interator.wav");
+        musicaOficina = new Sonido("recursos/musica/Interator.wav");
+        
+        musicaPuerto  = new Sonido("recursos/musica/Resonare.wav");
 
         raton = new Raton(this); // Inicializa el objeto ratón para rastrear la posición del cursor
 
-        // ---------------------------------------------------------------
+        // --------------------------------------------------------------- //
         // Listener de clics
-        // ---------------------------------------------------------------
+        // --------------------------------------------------------------- //
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -155,15 +160,19 @@ public class Dibujo extends Canvas {
                             detenerMusica();
                             String rutaVideo = "recursos/Video/Intro.mp4";
 
+                            
+                            // Es la creación de un panel del video y se le pasa una función Runnable (Para ejecutar el video)
                             ReproductorVideo panelVideo = new ReproductorVideo(rutaVideo, new Runnable() {
                                 @Override
                                 public void run() {
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        @Override
+                                	
+                                	// invorelater para asegurarnos de que el cambio de pantalla se ejecute en el hilo de la interfaz gráfica
+                                	
+                                    SwingUtilities.invokeLater(new Runnable() {  
                                         public void run() {
                                             ventana.getContentPane().removeAll();
                                             Dibujo nuevoDibujo = new Dibujo(ventana.getWidth(), ventana.getHeight(),
-                                                                            System.currentTimeMillis(), ventana);
+                                                                            System.currentTimeMillis(), ventana); // currentTimeMillis para reiniciar el tiempo de inicio (para la duración de la presentación)
                                             nuevoDibujo.cambiarAOficina1();
                                             ventana.getContentPane().add(nuevoDibujo);
                                             ventana.revalidate();
@@ -179,12 +188,12 @@ public class Dibujo extends Canvas {
                                 }
                             });
 
-                            ventana.getContentPane().removeAll();
-                            ventana.getContentPane().add(panelVideo);
-                            ventana.revalidate();
-                            ventana.repaint();
+                            ventana.getContentPane().removeAll();  // Elimina el contenido actual (menú) para mostrar el video
+                            ventana.getContentPane().add(panelVideo); // Agrega el panel del video a la ventana
+                            ventana.revalidate();  // Refresca la ventana para mostrar el nuevo contenido (es decir el video)
+                            ventana.repaint(); // para que se actualice la ventana y se muestre el video
                         }
-                   
+
                         // Botón OPCIONES
                         if (mx >= opcionesX && mx <= opcionesX + opcionesAncho &&
                             my >= opcionesY && my <= opcionesY + opcionesAlto) {
@@ -206,12 +215,10 @@ public class Dibujo extends Canvas {
                         }
                     }
                     
-                    // - CLAUDE -
 
-                    // ---------------------------------------------------------------
-                    // Aquí he agregado: navegación entre pantallas de oficina
-                    // ---------------------------------------------------------------
-                 // OFICINA 1
+                    // --------------------------------------------------------------- //
+                    // Navegación entre pantallas de oficina
+                    // --------------------------------------------------------------- //
                     if (pantallaOficinaActual == 1) {
 
                         if (mx >= o1_abajoX && mx <= o1_abajoX + o1_abajoW &&
@@ -241,6 +248,12 @@ public class Dibujo extends Canvas {
 
                             cambiarAOficina4();
                         }
+                        
+                        if (mx >= o2_arribaX && mx <= o2_arribaX + o2_arribaW &&
+                                my >= o2_arribaY && my <= o2_arribaY + o2_arribaH) {
+                                System.out.println("Oficina2 -> Puerto1");
+                                cambiarAPuerto1();
+                            }
                     }
 
                     // OFICINA 3
@@ -262,26 +275,39 @@ public class Dibujo extends Canvas {
                             cambiarAOficina2();
                         }
                     
-                     // CLICK OBJETO OCULTO
-                        if(enPantallaDelJuego && !objetoEncontrado){
+                        
+                    }
+                    else if (pantallaOficinaActual == 5) {
 
-                            if(mx >= objeto1X && mx <= objeto1X + objeto1W &&
-                               my >= objeto1Y && my <= objeto1Y + objeto1H){
-
-                                objetoEncontrado = true;
-                                System.out.println("OBJETO ENCONTRADO");
-
-                            }
+                        // Centro -> Puerto2
+                        if (mx >= p1_centroX && mx <= p1_centroX + p1_centroW &&
+                            my >= p1_centroY && my <= p1_centroY + p1_centroH) {
+                            System.out.println("Puerto1 -> Puerto2");
+                            cambiarAPuerto2();
                         }
-                        
-                        
-                        
+
+                        // Aquí he cambiado: abajo vuelve a Oficina2 (antes era Oficina1)
+                        if (mx >= p1_abajoX && mx <= p1_abajoX + p1_abajoW &&
+                            my >= p1_abajoY && my <= p1_abajoY + p1_abajoH) {
+                            System.out.println("Puerto1 -> Oficina2");
+                            cambiarAOficina2();
+                        }
+                    }
+
+                    // Aquí he agregado: PUERTO 2
+                    else if (pantallaOficinaActual == 6) {
+
+                        // Abajo -> Puerto1
+                        if (mx >= p2_abajoX && mx <= p2_abajoX + p2_abajoW &&
+                            my >= p2_abajoY && my <= p2_abajoY + p2_abajoH) {
+                            System.out.println("Puerto2 -> Puerto1");
+                            cambiarAPuerto1();
+                        }
                     }
                 }
             }
         });
         
-        // - CLAUDE -
 
         // Listener de hover (solo para el menú)
         this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -293,15 +319,6 @@ public class Dibujo extends Canvas {
                     hoverJugar    = (mx >= jugarX    && mx <= jugarX    + jugarAncho    && my >= jugarY    && my <= jugarY    + jugarAlto);
                     hoverOpciones = (mx >= opcionesX && mx <= opcionesX + opcionesAncho && my >= opcionesY && my <= opcionesY + opcionesAlto);
                     hoverSalir    = (mx >= salirX    && mx <= salirX    + salirAncho    && my >= salirY    && my <= salirY    + salirAlto);
-                
-            
-             // HOVER OBJETO OCULTO (solo dentro del juego)
-                if(enPantallaDelJuego && !objetoEncontrado){
-
-                    hoverObjeto1 =
-                        (mx >= objeto1X && mx <= objeto1X + objeto1W &&
-                         my >= objeto1Y && my <= objeto1Y + objeto1H);
-                	}
                 }
             }
         });
@@ -337,7 +354,7 @@ public class Dibujo extends Canvas {
     
     // ------------------------------------------------------------------------------------------ //
     
-    // - CLAUDE -
+    // Escenarios Oficinas
     
     public void cambiarAOficina1() {
         imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina .jpeg");
@@ -345,25 +362,26 @@ public class Dibujo extends Canvas {
         enPantallaDelJuego = true;
         pantallaOficinaActual = 1; // Aquí he agregado: marcamos en qué pantalla estamos
 
-        // Aquí he agregado: detenemos Interator y arrancamos Corium
-        detenerMusicaJuego();
-        detenerMusica();
-        musicaFondo = new Sonido("recursos/musica/Corium.wav");
+        // Se dentendra las cancion de Interator y arrancara Corium
+        detenerMusicaOficina(); // Detiene la música de juego (Interator)
+        detenerMusica(); // Detiene la música de fondo (Custodes Abyssi)
+        musicaFondo = new Sonido("recursos/musica/Corium.wav"); // Carga la música de Corium para la oficina 1
         if (musicaFondo != null) {
             musicaFondo.reproducir(true);
         }
     }
 
-    // Aquí he agregado: método para ir a Oficina2.png (vértebra de navegación)
+   
     public void cambiarAOficina2() {
         imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina2.png");
         cambioRealizado = true;
         enPantallaDelJuego = true;
-        pantallaOficinaActual = 2; // Aquí he agregado: marcamos en qué pantalla estamos
+        pantallaOficinaActual = 2; 
 
-        // Aquí he agregado: detenemos Corium y arrancamos Interator
+
         detenerMusica();
-        iniciarMusicaJuego();
+        detenerMusicaPuerto();
+        iniciarMusicaOficina();
     }
 
     // Aquí he agregado: método para ir a Oficina3.png
@@ -371,43 +389,90 @@ public class Dibujo extends Canvas {
         imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina3.png");
         cambioRealizado = true;
         enPantallaDelJuego = true;
-        pantallaOficinaActual = 3; // Aquí he agregado: marcamos en qué pantalla estamos
+        pantallaOficinaActual = 3; 
 
-        // Aquí he agregado: Interator continúa sin cortarse al cambiar entre Oficina2/3/4
         detenerMusica();
-        iniciarMusicaJuego();
+        iniciarMusicaOficina();
     }
 
-    // Aquí he agregado: método para ir a Oficina4.png
+   
     public void cambiarAOficina4() {
         imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Oficina4.png");
         cambioRealizado = true;
         enPantallaDelJuego = true;
-        pantallaOficinaActual = 4; // Aquí he agregado: marcamos en qué pantalla estamos
+        pantallaOficinaActual = 4; 
 
-        // Aquí he agregado: Interator continúa sin cortarse al cambiar entre Oficina2/3/4
+       
         detenerMusica();
-        iniciarMusicaJuego();
+        iniciarMusicaOficina();
     }
     
     // ------------------------------------------------------------------------------------------ //
     
-    private void iniciarMusicaJuego() {
-        if (musicaJuego == null) {
-            musicaJuego = new Sonido("recursos/musica/Interator.wav");
+    // Escenarios Puertos 
+    
+    
+     public void cambiarAPuerto1() {
+		imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Puerto1.jpg");
+		cambioRealizado = true;
+		enPantallaDelJuego = true;
+		pantallaOficinaActual = 5; 
+
+		detenerMusica();
+		detenerMusicaOficina();
+        iniciarMusicaPuerto();
+	}
+
+	 public void cambiarAPuerto2() {
+		imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Puerto2.jpg");
+		cambioRealizado = true;
+		enPantallaDelJuego = true;
+		pantallaOficinaActual = 6; 
+
+		detenerMusica();
+		detenerMusicaOficina();
+		iniciarMusicaPuerto();
+	}
+	 
+    // ------------------------------------------------------------------------------------------ //
+	 
+	 // Musica de los escenarios
+	 
+    private void iniciarMusicaOficina() {
+        if (musicaOficina == null) {
+            musicaOficina = new Sonido("recursos/musica/Interator.wav");
         }
-        if (musicaJuego != null && !musicaJuego.isReproduciendo()) {
-            musicaJuego.reproducir(true);
+        if (musicaOficina != null && !musicaOficina.isReproduciendo()) {
+            musicaOficina.reproducir(true);
         }
     }
 
-    // Aquí he agregado: detiene la música de juego (Interator)
-    private void detenerMusicaJuego() {
-        if (musicaJuego != null) {
-            musicaJuego.detener();
+    
+    private void detenerMusicaOficina() {
+        if (musicaOficina != null) {
+            musicaOficina.detener();
+            
+            musicaOficina = null; // Libera recursos de la musica para que pueda volver a cargar la música
         }
         
         }
+    
+    
+    private void iniciarMusicaPuerto() {
+        if (musicaPuerto == null) {
+            musicaPuerto = new Sonido("recursos/musica/Resonare.wav");
+        }
+        if (musicaPuerto != null && !musicaPuerto.isReproduciendo()) {
+            musicaPuerto.reproducir(true);
+        }
+    }
+    
+    private void detenerMusicaPuerto() {
+		if (musicaPuerto != null) {
+			musicaPuerto.detener();
+			musicaPuerto = null; // Libera recursos de la musica para que pueda volver a cargar la música
+		}
+	}
     
     // ------------------------------------------------------------------------------------------ //
     
@@ -490,12 +555,13 @@ public class Dibujo extends Canvas {
             }
         }
         
-       
-     // ZONAS DE OFICINA (PARA DEBUG)
+        
+        // Las posiciones de clic para navegar entre pantallas de oficina.
+        
         if (enPantallaDelJuego) {
 
             Graphics2D g2d = (Graphics2D) graficos;
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f));
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f)); // 35% de transparencia para el efecto de superposición	
             g2d.setColor(new Color (255,255,255,100));
            
             
@@ -507,7 +573,7 @@ public class Dibujo extends Canvas {
             else if (pantallaOficinaActual == 2) {
                 g2d.fillRect(o2_abajoX, o2_abajoY, o2_abajoW, o2_abajoH);
                 g2d.fillRect(o2_derX, o2_derY, o2_derW, o2_derH);
-                g2d.fillRect(o2_izqX, o2_izqY, o2_izqW, o2_izqH);
+                g2d.fillRect(o2_izqX, o2_izqY, o2_izqW, o2_izqH); 
             }
 
             else if (pantallaOficinaActual == 3) {
@@ -518,23 +584,17 @@ public class Dibujo extends Canvas {
                 g2d.fillRect(o4_derX, o4_derY, o4_derW, o4_derH);
             }
 
+            else if (pantallaOficinaActual == 5) {
+                g2d.fillRect(p1_centroX, p1_centroY, p1_centroW, p1_centroH);
+                g2d.fillRect(p1_abajoX,  p1_abajoY,  p1_abajoW,  p1_abajoH);
+            }
+            else if (pantallaOficinaActual == 6) {
+                g2d.fillRect(p2_abajoX, p2_abajoY, p2_abajoW, p2_abajoH);
+            }
+
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
-     // HOVER OBJETO OCULTO
-        if(hoverObjeto1 && !objetoEncontrado){
-
-            Graphics2D g2d = (Graphics2D) graficos;
-
-            g2d.setComposite(AlphaComposite.getInstance(
-                AlphaComposite.SRC_OVER, 0.35f));
-
-            g2d.setColor(new Color(255,255,0));
-
-            g2d.fillOval(objeto1X, objeto1Y, objeto1W, objeto1H);
-
-            g2d.setComposite(AlphaComposite.getInstance(
-                AlphaComposite.SRC_OVER, 1f));
-        }
+        
         
         
 
