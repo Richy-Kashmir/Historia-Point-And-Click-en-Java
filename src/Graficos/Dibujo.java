@@ -73,7 +73,14 @@ public class Dibujo extends Canvas {
 
 	// OFICINA 4
 	private int o4_derX = 700, o4_derY = 0, o4_derW = 800, o4_derH = 800;
-    
+	// OBJETO OCULTO EJEMPLO
+	private int objeto1X = 420;
+	private int objeto1Y = 310;
+	private int objeto1W = 80;
+	private int objeto1H = 80;
+
+	private boolean hoverObjeto1 = false;
+	private boolean objetoEncontrado = false;
 
     public Dibujo(int ancho, int alto, long tiempoInicio, JFrame ventana) {
         setPreferredSize(new Dimension(ancho, alto));
@@ -177,7 +184,7 @@ public class Dibujo extends Canvas {
                             ventana.revalidate();
                             ventana.repaint();
                         }
-
+                   
                         // Botón OPCIONES
                         if (mx >= opcionesX && mx <= opcionesX + opcionesAncho &&
                             my >= opcionesY && my <= opcionesY + opcionesAlto) {
@@ -255,6 +262,20 @@ public class Dibujo extends Canvas {
                             cambiarAOficina2();
                         }
                     
+                     // CLICK OBJETO OCULTO
+                        if(enPantallaDelJuego && !objetoEncontrado){
+
+                            if(mx >= objeto1X && mx <= objeto1X + objeto1W &&
+                               my >= objeto1Y && my <= objeto1Y + objeto1H){
+
+                                objetoEncontrado = true;
+                                System.out.println("OBJETO ENCONTRADO");
+
+                            }
+                        }
+                        
+                        
+                        
                     }
                 }
             }
@@ -272,6 +293,15 @@ public class Dibujo extends Canvas {
                     hoverJugar    = (mx >= jugarX    && mx <= jugarX    + jugarAncho    && my >= jugarY    && my <= jugarY    + jugarAlto);
                     hoverOpciones = (mx >= opcionesX && mx <= opcionesX + opcionesAncho && my >= opcionesY && my <= opcionesY + opcionesAlto);
                     hoverSalir    = (mx >= salirX    && mx <= salirX    + salirAncho    && my >= salirY    && my <= salirY    + salirAlto);
+                
+            
+             // HOVER OBJETO OCULTO (solo dentro del juego)
+                if(enPantallaDelJuego && !objetoEncontrado){
+
+                    hoverObjeto1 =
+                        (mx >= objeto1X && mx <= objeto1X + objeto1W &&
+                         my >= objeto1Y && my <= objeto1Y + objeto1H);
+                	}
                 }
             }
         });
@@ -490,7 +520,21 @@ public class Dibujo extends Canvas {
 
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
-    	
+     // HOVER OBJETO OCULTO
+        if(hoverObjeto1 && !objetoEncontrado){
+
+            Graphics2D g2d = (Graphics2D) graficos;
+
+            g2d.setComposite(AlphaComposite.getInstance(
+                AlphaComposite.SRC_OVER, 0.35f));
+
+            g2d.setColor(new Color(255,255,0));
+
+            g2d.fillOval(objeto1X, objeto1Y, objeto1W, objeto1H);
+
+            g2d.setComposite(AlphaComposite.getInstance(
+                AlphaComposite.SRC_OVER, 1f));
+        }
         
         
 

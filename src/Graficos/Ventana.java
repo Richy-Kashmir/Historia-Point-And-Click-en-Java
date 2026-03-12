@@ -13,7 +13,7 @@ public class Ventana extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       // Para cerra  la ventana
 		this.setTitle(nombre);                                    // Da titulo a la ventana
 		this.setResizable(false);                                // Para que la pantalla no cambie de tamaño
-		this.setLayout(new BorderLayout());                     // Es ordenar los componentes dentro de la ventana
+		this.setLayout(new BorderLayout(  ));                     // Es ordenar los componentes dentro de la ventana
 		if (superficieDibujo != null) {                       
             this.add(superficieDibujo, BorderLayout.CENTER);   // Condición para permitir null inicialmente
         }                     
