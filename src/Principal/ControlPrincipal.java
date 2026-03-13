@@ -36,7 +36,7 @@ public class ControlPrincipal {
 		long tiempoActual = System.currentTimeMillis();
 
         // Aquí cambié: Creo la ventana primero sin canvas, luego paso la ventana a Dibujo, y agrego manualmente
-        Ventana ventana = new Ventana("El Cuervo", null);  // Paso null temporalmente
+        Ventana ventana = new Ventana("UMBRAE", null);  // Paso null temporalmente
         dibujo = new Dibujo(800, 600, tiempoActual, ventana);  // Paso la ventana
         ventana.add(dibujo, BorderLayout.CENTER);  // Agrego el dibujo manualmente
         ventana.pack();  // Ajusta el tamaño

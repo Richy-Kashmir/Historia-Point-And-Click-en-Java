@@ -343,7 +343,7 @@ public class Dibujo extends Canvas {
                                 cambiarAPuerto1();
                             } else {
                                 // Aquí he agregado: muestra el mensaje en pantalla
-                                textoMensaje = "Necesito mis herramientas para ir al Puerto";
+                                textoMensaje = "Antes de salir al puerto, necesito asegurarme de tener todas mis herramientas para ir tras mi hija. Debería revisar bien en cada rincon para encontrar lo que me falta.";
                                 mostrarMensaje = true;
                                 System.out.println(textoMensaje);
                             }
@@ -411,7 +411,7 @@ public class Dibujo extends Canvas {
                                  ganzuasEncontradas = true;
                                  System.out.println("GANZUAS OBTENIDAS");
                              } else {
-                                 textoMensaje = "Necesito la llave primero";
+                                 textoMensaje = "Si no mal me equivoco aquí esta mi ganzúa, pero necesito la llave para poder acceder a ella";
                                  mostrarMensaje = true;
                              }
                          }
@@ -432,7 +432,7 @@ public class Dibujo extends Canvas {
                                  pistolaEncontrada = true;
                                  System.out.println("PISTOLA OBTENIDA");
                              } else {
-                                 textoMensaje = "Necesito la llave primero";
+                                 textoMensaje = "Aquí esta mi pistola, me sera util para defenderme, pero necesito la llave para poder acceder a ella";
                                  mostrarMensaje = true;
                              }
                          }
@@ -797,21 +797,21 @@ public boolean tieneTodasLasHerramientas() {
         	// BARRA SUPERIOR DEL JUEGO (HUD)
         	// --------------------------------------------------
 
-        	Graphics2D gHUD = (Graphics2D) graficos;
+        	Graphics2D gHUD = (Graphics2D) graficos; // Para efectos de transparencia
 
-        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f));
+        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f)); // 85% de opacidad para la barra superior del HUD 
         	gHUD.setColor(new Color(20,20,20));
         	gHUD.fillRect(0,0,getWidth(),70);
 
-        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f)); // Restaurar opacidad completa para el menú y otros elementos del HUD
         	
         
         	
         	gHUD.setColor(new Color(120,120,120));
         	gHUD.fillRoundRect(menuX, menuY, menuW, menuH, 10, 10);
 
-        	gHUD.setColor(Color.WHITE);
-        	gHUD.drawString("MENU", menuX + 30, menuY + 25);
+        	gHUD.setColor(Color.WHITE); // Color del texto del menú	
+        	gHUD.drawString("MENU", menuX + 30, menuY + 25); // Texto del botón del menú
         	
         	
         	
@@ -1065,7 +1065,7 @@ public boolean tieneTodasLasHerramientas() {
             // Indicación para cerrar
             gMsg.setColor(new Color(160, 160, 160));
             gMsg.setFont(new Font("Arial", Font.PLAIN, 11));
-            gMsg.drawString("[ Click para cerrar ]", mensajeX + 130, mensajeY + 60);
+            gMsg.drawString("[ Haz click para cerrar el mensaje ]", mensajeX + 130, mensajeY + 60);
         }
     
         
