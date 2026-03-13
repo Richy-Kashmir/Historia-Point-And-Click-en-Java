@@ -214,15 +214,15 @@ public class Dibujo extends Canvas {
                     int my = e.getY();
 
                     
-                    
-                    if (mostrarMensaje &&
-                            mx >= mensajeX && mx <= mensajeX + mensajeW &&
+                    if (mostrarMensaje) {
+                        if (mx >= mensajeX && mx <= mensajeX + mensajeW &&
                             my >= mensajeY && my <= mensajeY + mensajeH) {
                             mostrarMensaje = false;
-                            return; // Hasta no hacer click en el mensaje, no se podra hacer nada
                         }
+                        return; // Hasta no hacer click en el mensaje no se podrá hacer nada
+                    }
                     
-                    
+            
                     // --- Botones del MENÚ (solo si NO estamos en el juego) ---
                     if (!enPantallaDelJuego) {
 
@@ -568,14 +568,14 @@ public class Dibujo extends Canvas {
 public boolean tieneTodasLasHerramientas() {
 		return linternaEncontrada && grabadoraEncontrada && pistolaEncontrada &&
 		   documentoEncontrado && huellaEncontrada && fotoEncontrada &&
-		   ganzuasEncontradas && llaveEncontrada;
+		   llaveEncontrada;
 }
     
     // ------------------------------------------------------------------------------------------ //
     
 public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMaximo) {
-    List<String> lineas = new ArrayList<>();
-    FontMetrics fm = g.getFontMetrics();
+    List<String> lineas = new ArrayList<>(); // Lista para almacenar las líneas resultantes
+    FontMetrics fm = g.getFontMetrics(); // Para medir el ancho del texto con la fuente actual
 
     String[] palabras = texto.split(" ");
     StringBuilder lineaActual = new StringBuilder();
@@ -1113,7 +1113,7 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
                             mensajeX + margen, mensajeY + alturaCuadro - 10);
 
             // Actualizar el área de click de cierre con la altura real del cuadro
-            mensajeH = alturaCuadro;
+            mensajeH = alturaCuadro + 20;
         }
     
         
