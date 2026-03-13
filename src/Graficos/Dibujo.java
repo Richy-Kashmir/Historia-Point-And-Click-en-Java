@@ -5,6 +5,8 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -12,8 +14,12 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
 import Principal.ControlPrincipal;
 import control.Raton;
 import herramientas.CargadorRecursos;
@@ -67,8 +73,7 @@ public class Dibujo extends Canvas {
 	// Botón menú dentro del juego
 	private int menuX = 20, menuY = 15, menuW = 100, menuH = 40;
 	private boolean menuJuegoAbierto = false;
-	private boolean mensajeMostrado = false; // Para mostrar un mensaje de bienvenida solo la primera vez que se entra a una oficina
-	
+
     // ----------------------------------------------------------------------- //
     // Zonas de clic para navegar entre pantallas de oficina
     // ----------------------------------------------------------------------- //
@@ -126,6 +131,11 @@ public class Dibujo extends Canvas {
 	private boolean ganzuasEncontradas = false;
 	private boolean llaveEncontrada = false;
     
+	
+	// Obtención de objetos más mensaje
+    private boolean mostrarMensaje = false;
+    private String textoMensaje = "";
+    private int mensajeX = 80, mensajeY = 190, mensajeW = 640, mensajeH = 130; // Área del mensaje (para poder cerrarlo al hacer click encima)
 
     public Dibujo(int ancho, int alto, long tiempoInicio, JFrame ventana) {
         setPreferredSize(new Dimension(ancho, alto));
@@ -203,6 +213,16 @@ public class Dibujo extends Canvas {
                     int mx = e.getX();
                     int my = e.getY();
 
+                    
+                    
+                    if (mostrarMensaje &&
+                            mx >= mensajeX && mx <= mensajeX + mensajeW &&
+                            my >= mensajeY && my <= mensajeY + mensajeH) {
+                            mostrarMensaje = false;
+                            return; // Hasta no hacer click en el mensaje, no se podra hacer nada
+                        }
+                    
+                    
                     // --- Botones del MENÚ (solo si NO estamos en el juego) ---
                     if (!enPantallaDelJuego) {
 
@@ -316,12 +336,21 @@ public class Dibujo extends Canvas {
 
                             cambiarAOficina4();
                         }
-                        
                         if (mx >= o2_arribaX && mx <= o2_arribaX + o2_arribaW &&
                                 my >= o2_arribaY && my <= o2_arribaY + o2_arribaH) {
+     
+                                
+                            if (tieneTodasLasHerramientas()) {
                                 System.out.println("Oficina2 -> Puerto1");
+                                mostrarMensaje = false;
                                 cambiarAPuerto1();
+                            } else {
+                                // Aquí he agregado: muestra el mensaje en pantalla
+                                textoMensaje = "Antes de salir al puerto, necesito asegurarme de tener todas mis herramientas para ir tras mi hija. Debería revisar bien en cada rincon para encontrar lo que me falta.";
+                                mostrarMensaje = true;
+                                System.out.println(textoMensaje);
                             }
+                        }
                     }
 
                     // OFICINA 3
@@ -378,13 +407,18 @@ public class Dibujo extends Canvas {
                  // --------------------------------------------------
                  if(pantallaOficinaActual == 1){
 
-                     if(!ganzuasEncontradas &&
-                        mx >= ganzuaX && mx <= ganzuaX + ganzuaW &&
-                        my >= ganzuaY && my <= ganzuaY + ganzuaH){
-
-                         ganzuasEncontradas= true;
-                         System.out.println("GANZUAS OBTENIDAS");
-                     }
+                     if (!ganzuasEncontradas &&
+                             mx >= ganzuaX && mx <= ganzuaX + ganzuaW &&
+                             my >= ganzuaY && my <= ganzuaY + ganzuaH) {
+                             if (llaveEncontrada) {
+                                 ganzuasEncontradas = true;
+                                 System.out.println("GANZUAS OBTENIDAS");
+                             } else {
+                                 textoMensaje = "Si no mal me equivoco aquí esta mi ganzúa, pero necesito la llave para poder acceder a ella";
+                                 mostrarMensaje = true;
+                             }
+                         }
+                     
 
                      if(!grabadoraEncontrada &&
                         mx >= grabadoraX && mx <= grabadoraX + grabadoraW &&
@@ -394,13 +428,17 @@ public class Dibujo extends Canvas {
                          System.out.println("GRABADORA OBTENIDA");
                      }
 
-                     if(!pistolaEncontrada &&
-                        mx >= pistolaX && mx <= pistolaX + pistolaW &&
-                        my >= pistolaY && my <= pistolaY + pistolaH){
-
-                         pistolaEncontrada = true;
-                         System.out.println("PISTOLA OBTENIDA");
-                     }
+                     if (!pistolaEncontrada &&
+                             mx >= pistolaX && mx <= pistolaX + pistolaW &&
+                             my >= pistolaY && my <= pistolaY + pistolaH) {
+                             if (llaveEncontrada) {
+                                 pistolaEncontrada = true;
+                                 System.out.println("PISTOLA OBTENIDA");
+                             } else {
+                                 textoMensaje = "Aquí esta mi pistola, me sera util para defenderme, pero necesito la llave para poder acceder a ella";
+                                 mostrarMensaje = true;
+                             }
+                         }
                  }
 
 
@@ -423,6 +461,8 @@ public class Dibujo extends Canvas {
 
                          llaveEncontrada = true;
                          System.out.println("LLAVE OBTENIDA");
+                         
+                         
                      }
 
                      if(!fotoEncontrada &&
@@ -523,9 +563,42 @@ public class Dibujo extends Canvas {
     	
 	}
     
+    // -------------------------------------------------------------------------------- //
+    
+public boolean tieneTodasLasHerramientas() {
+		return linternaEncontrada && grabadoraEncontrada && pistolaEncontrada &&
+		   documentoEncontrado && huellaEncontrada && fotoEncontrada &&
+		   ganzuasEncontradas && llaveEncontrada;
+}
     
     // ------------------------------------------------------------------------------------------ //
     
+public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMaximo) {
+    List<String> lineas = new ArrayList<>();
+    FontMetrics fm = g.getFontMetrics();
+
+    String[] palabras = texto.split(" ");
+    StringBuilder lineaActual = new StringBuilder();
+
+    for (String palabra : palabras) {
+        String prueba = lineaActual.length() == 0 ? palabra : lineaActual + " " + palabra;
+        if (fm.stringWidth(prueba) <= anchoMaximo) {
+            lineaActual = new StringBuilder(prueba);
+        } else {
+            if (lineaActual.length() > 0) {
+                lineas.add(lineaActual.toString());
+            }
+            lineaActual = new StringBuilder(palabra);
+        }
+    }
+    if (lineaActual.length() > 0) {
+        lineas.add(lineaActual.toString());
+    }
+    return lineas;
+}
+
+
+ // ------------------------------------------------------------------------------------------ //
     
     public void cambiarAImagenSecundaria() {
         imagenActual = imagenSecundaria;
@@ -540,9 +613,6 @@ public class Dibujo extends Canvas {
     
     
     // ------------------------------------------------------------------------------------------ //
-    
- 
-    
     
     // Escenarios Oficinas
     
@@ -756,37 +826,31 @@ public class Dibujo extends Canvas {
         	// BARRA SUPERIOR DEL JUEGO (HUD)
         	// --------------------------------------------------
 
-        	Graphics2D gHUD = (Graphics2D) graficos;
+        	Graphics2D gHUD = (Graphics2D) graficos; // Para efectos de transparencia
 
-        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f));
+        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f)); // 85% de opacidad para la barra superior del HUD 
         	gHUD.setColor(new Color(20,20,20));
         	gHUD.fillRect(0,0,getWidth(),70);
 
-        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f)); // Restaurar opacidad completa para el menú y otros elementos del HUD
         	
         
         	
         	gHUD.setColor(new Color(120,120,120));
         	gHUD.fillRoundRect(menuX, menuY, menuW, menuH, 10, 10);
 
-        	gHUD.setColor(Color.WHITE);
-        	gHUD.drawString("MENU", menuX + 30, menuY + 25);
+        	gHUD.setColor(Color.WHITE); // Color del texto del menú	
+        	gHUD.drawString("MENU", menuX + 30, menuY + 25); // Texto del botón del menú
         	
         	
-        	if(!mensajeMostrado) {
-			    gHUD.setColor(new Color(255,255,255,200));
-			    gHUD.fillRect(150, 200, 500, 100);
-			    gHUD.setColor(Color.BLACK);
-			    gHUD.drawString("¡Bienvenido a la oficina!", 170, 250);
-			    mensajeMostrado = true; // Para que el mensaje solo se muestre la primera vez que se entra a una oficina
-			}
+        	
         	
         	
         	
         	// --------------------------------------------------
         	// MENU DEL JUEGO
-        	// -------------------------------------------------
-        	
+        	// --------------------------------------------------
+
         	if(menuJuegoAbierto){
         	    Graphics2D gMenu = (Graphics2D) graficos;
         	    gMenu.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.9f));
@@ -887,6 +951,10 @@ public class Dibujo extends Canvas {
                 g2d.fillRect(o2_abajoX, o2_abajoY, o2_abajoW, o2_abajoH);
                 g2d.fillRect(o2_derX, o2_derY, o2_derW, o2_derH);
                 g2d.fillRect(o2_izqX, o2_izqY, o2_izqW, o2_izqH); 
+                
+                if (tieneTodasLasHerramientas()) {
+                    g2d.fillRect(o2_arribaX, o2_arribaY, o2_arribaW, o2_arribaH);
+                }
             }
 
             else if (pantallaOficinaActual == 3) {
@@ -1000,7 +1068,54 @@ public class Dibujo extends Canvas {
         
         }
         
-        
+        // --------------------------------------------------------------------------------------- //
+        // Mensaje de pantalla 
+        // --------------------------------------------------------------------------------------- //
+        if (mostrarMensaje) {
+            Graphics2D gMsg = (Graphics2D) graficos;
+            gMsg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            Font fuenteTexto = new Font("Arial", Font.ITALIC, 15);
+            gMsg.setFont(fuenteTexto);
+
+            // Margen interno del cuadro
+            int margen         = 20;
+            int anchoTexto     = mensajeW - margen * 2;
+            int alturaLinea    = 22; // espacio entre líneas en px
+
+            // Partir el texto en líneas que quepan en el cuadro
+            List<String> lineas = partirTextoEnLineas(gMsg, textoMensaje, anchoTexto);
+
+            // Altura dinámica: líneas * alturaLinea + espacio para "click para cerrar" + márgenes
+            int alturaCuadro = margen + lineas.size() * alturaLinea + 30;
+
+            // Fondo oscuro semitransparente
+            gMsg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.88f));
+            gMsg.setColor(new Color(20, 20, 20));
+            gMsg.fillRoundRect(mensajeX, mensajeY, mensajeW, alturaCuadro, 18, 18);
+
+            // Borde dorado
+            gMsg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+            gMsg.setColor(new Color(200, 160, 30));
+            gMsg.drawRoundRect(mensajeX, mensajeY, mensajeW, alturaCuadro, 18, 18);
+
+            // Dibujar cada línea de texto
+            gMsg.setColor(Color.WHITE);
+            gMsg.setFont(fuenteTexto);
+            for (int i = 0; i < lineas.size(); i++) {
+                gMsg.drawString(lineas.get(i), mensajeX + margen, mensajeY + margen + (i + 1) * alturaLinea);
+            }
+
+            // Indicación para cerrar
+            gMsg.setColor(new Color(160, 160, 160));
+            gMsg.setFont(new Font("Arial", Font.PLAIN, 11));
+            gMsg.drawString("[ Haz click aquí para cerrar el mensaje ]",
+                            mensajeX + margen, mensajeY + alturaCuadro - 10);
+
+            // Actualizar el área de click de cierre con la altura real del cuadro
+            mensajeH = alturaCuadro;
+        }
+    
         
 
         
