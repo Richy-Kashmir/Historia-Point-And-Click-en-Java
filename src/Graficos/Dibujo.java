@@ -5,6 +5,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -47,14 +48,28 @@ public class Dibujo extends Canvas {
 	private boolean hoverSalir = false;
 	private JFrame ventana;
 	private boolean enPantallaOpciones = false;
+	
+	// Imagenes de objetos	
 	private BufferedImage imagenLupa;
+	private BufferedImage imgLinterna;
+	private BufferedImage imgGrabadora;
+	private BufferedImage imgPistola;
+	private BufferedImage imgDocumento;
+	private BufferedImage imgHuella;
+	private BufferedImage imgFoto;
+	private BufferedImage imgGanzuas;
+	private BufferedImage imgLlave;
+	
+	
+	
 	private boolean enPantallaDelJuego = false;
 	
 	private int pantallaOficinaActual = 0;
 	private Sonido musicaOficina;
 	private Sonido musicaPuerto;
-
-	
+	// Botón menú dentro del juego
+	private int menuX = 20, menuY = 15, menuW = 100, menuH = 40;
+	private boolean menuJuegoAbierto = false;
 
     // ----------------------------------------------------------------------- //
     // Zonas de clic para navegar entre pantallas de oficina
@@ -83,7 +98,41 @@ public class Dibujo extends Canvas {
 	
 	// Puerto 2 zona inferior (Puerto2 -> Puerto1)
 	private int p2_abajoX = 0,   p2_abajoY = 500, p2_abajoW = 800, p2_abajoH = 100;
+	
+	// --------------------------------------------------
+	// OBJETOS DEL JUEGO
+	// --------------------------------------------------
+
+	// OFICINA 1
+	private int ganzuaX = 240, ganzuaY = 350, ganzuaW = 60, ganzuaH = 60;
+	private int grabadoraX = 440, grabadoraY = 160, grabadoraW = 60, grabadoraH = 60;
+	private int pistolaX = 640, pistolaY = 450, pistolaW = 70, pistolaH = 70;
+
+	// OFICINA 3
+	private int documentoX = 700, documentoY = 550, documentoW = 60, documentoH = 60;
+	private int llaveX = 450, llaveY = 350, llaveW = 60, llaveH = 60;
+	private int fotoX = 120, fotoY = 320, fotoW = 60, fotoH = 60;
+
+	// OFICINA 4
+	private int linternaX = 350, linternaY = 350, linternaW = 60, linternaH = 60;
+	private int huellaX = 560, huellaY = 380, huellaW = 60, huellaH = 60;
+
+
+	// OBJETOS ENCONTRADOS
+	private boolean linternaEncontrada = false;
+	private boolean grabadoraEncontrada = false;
+	private boolean pistolaEncontrada = false;
+	private boolean documentoEncontrado = false;
+	private boolean huellaEncontrada = false;
+	private boolean fotoEncontrada = false;
+	private boolean ganzuasEncontradas = false;
+	private boolean llaveEncontrada = false;
     
+	
+	// Obtención de objetos más mensaje
+    private boolean mostrarMensaje = false;
+    private String textoMensaje = "";
+    private int mensajeX = 200, mensajeY = 220, mensajeW = 400, mensajeH = 80; // Área del mensaje (para poder cerrarlo al hacer click encima)
 
     public Dibujo(int ancho, int alto, long tiempoInicio, JFrame ventana) {
         setPreferredSize(new Dimension(ancho, alto));
@@ -101,7 +150,19 @@ public class Dibujo extends Canvas {
 			imagenActual = imagenInicial; // Comienza con la imagen inicial
         
 			
-			imagenLupa = CargadorRecursos.cargarImagen("recursos/imagenes/lupa.png");
+			imagenLupa 	  = CargadorRecursos.cargarImagen("recursos/imagenes/lupa.png");
+			imgLinterna   = CargadorRecursos.cargarImagen("recursos/imagenes/Linterna.jpeg");
+			imgGrabadora  = CargadorRecursos.cargarImagen("recursos/imagenes/Grabadora.jpeg");
+			imgPistola    = CargadorRecursos.cargarImagen("recursos/imagenes/Pistola.jpeg");
+			imgDocumento  = CargadorRecursos.cargarImagen("recursos/imagenes/Documentos.jpeg");
+			imgHuella     = CargadorRecursos.cargarImagen("recursos/imagenes/Huellas.jpeg");
+			imgFoto       = CargadorRecursos.cargarImagen("recursos/imagenes/Foto.jpeg");
+			imgGanzuas    = CargadorRecursos.cargarImagen("recursos/imagenes/Ganzua.jpeg");
+			imgLlave      = CargadorRecursos.cargarImagen("recursos/imagenes/Llaves.jpeg");
+			
+			
+			
+			
 			
 			if (imagenLupa != null) {
 
@@ -149,6 +210,16 @@ public class Dibujo extends Canvas {
                     int mx = e.getX();
                     int my = e.getY();
 
+                    
+                    
+                    if (mostrarMensaje &&
+                            mx >= mensajeX && mx <= mensajeX + mensajeW &&
+                            my >= mensajeY && my <= mensajeY + mensajeH) {
+                            mostrarMensaje = false;
+                            return; // Hasta no hacer click en el mensaje, no se podra hacer nada
+                        }
+                    
+                    
                     // --- Botones del MENÚ (solo si NO estamos en el juego) ---
                     if (!enPantallaDelJuego) {
 
@@ -213,6 +284,20 @@ public class Dibujo extends Canvas {
                                 System.exit(0);
                             }
                         }
+                    
+                       //  menú del juego (solo si estamos en el juego)
+                        
+                        if(mx >= menuX && mx <= menuX + menuW &&
+                        		   my >= menuY && my <= menuY + menuH){
+
+                        		    System.out.println("MENU ABIERTO");
+
+                        		    enPantallaDelJuego = false;
+                        		    cambiarAImagenSecundaria();
+                        		}
+                    
+                     
+                        
                     }
                     
 
@@ -248,12 +333,21 @@ public class Dibujo extends Canvas {
 
                             cambiarAOficina4();
                         }
-                        
                         if (mx >= o2_arribaX && mx <= o2_arribaX + o2_arribaW &&
                                 my >= o2_arribaY && my <= o2_arribaY + o2_arribaH) {
+     
+                                
+                            if (tieneTodasLasHerramientas()) {
                                 System.out.println("Oficina2 -> Puerto1");
+                                mostrarMensaje = false;
                                 cambiarAPuerto1();
+                            } else {
+                                // Aquí he agregado: muestra el mensaje en pantalla
+                                textoMensaje = "Necesito mis herramientas para ir al Puerto";
+                                mostrarMensaje = true;
+                                System.out.println(textoMensaje);
                             }
+                        }
                     }
 
                     // OFICINA 3
@@ -304,8 +398,138 @@ public class Dibujo extends Canvas {
                             cambiarAPuerto1();
                         }
                     }
+                
+                 // --------------------------------------------------
+                 // OBJETOS OFICINA 1
+                 // --------------------------------------------------
+                 if(pantallaOficinaActual == 1){
+
+                     if (!ganzuasEncontradas &&
+                             mx >= ganzuaX && mx <= ganzuaX + ganzuaW &&
+                             my >= ganzuaY && my <= ganzuaY + ganzuaH) {
+                             if (llaveEncontrada) {
+                                 ganzuasEncontradas = true;
+                                 System.out.println("GANZUAS OBTENIDAS");
+                             } else {
+                                 textoMensaje = "Necesito la llave primero";
+                                 mostrarMensaje = true;
+                             }
+                         }
+                     
+
+                     if(!grabadoraEncontrada &&
+                        mx >= grabadoraX && mx <= grabadoraX + grabadoraW &&
+                        my >= grabadoraY && my <= grabadoraY + grabadoraH){
+
+                         grabadoraEncontrada = true;
+                         System.out.println("GRABADORA OBTENIDA");
+                     }
+
+                     if (!pistolaEncontrada &&
+                             mx >= pistolaX && mx <= pistolaX + pistolaW &&
+                             my >= pistolaY && my <= pistolaY + pistolaH) {
+                             if (llaveEncontrada) {
+                                 pistolaEncontrada = true;
+                                 System.out.println("PISTOLA OBTENIDA");
+                             } else {
+                                 textoMensaje = "Necesito la llave primero";
+                                 mostrarMensaje = true;
+                             }
+                         }
+                 }
+
+
+                 // --------------------------------------------------
+                 // OBJETOS OFICINA 3
+                 // --------------------------------------------------
+                 if(pantallaOficinaActual == 3){
+
+                     if(!documentoEncontrado &&
+                        mx >= documentoX && mx <= documentoX + documentoW &&
+                        my >= documentoY && my <= documentoY + documentoH){
+
+                         documentoEncontrado = true;
+                         System.out.println("DOCUMENTO OBTENIDO");
+                     }
+
+                     if(!llaveEncontrada &&
+                        mx >= llaveX && mx <= llaveX + llaveW &&
+                        my >= llaveY && my <= llaveY + llaveH){
+
+                         llaveEncontrada = true;
+                         System.out.println("LLAVE OBTENIDA");
+                         
+                         
+                     }
+
+                     if(!fotoEncontrada &&
+                        mx >= fotoX && mx <= fotoX + fotoW &&
+                        my >= fotoY && my <= fotoY + fotoH){
+
+                         fotoEncontrada = true;
+                         System.out.println("FOTO OBTENIDA");
+                     }
+                 }
+
+
+                 // --------------------------------------------------
+                 // OBJETOS OFICINA 4
+                 // --------------------------------------------------
+                 if(pantallaOficinaActual == 4){
+
+                     if(!linternaEncontrada &&
+                        mx >= linternaX && mx <= linternaX + linternaW &&
+                        my >= linternaY && my <= linternaY + linternaH){
+
+                    	 	linternaEncontrada = true;
+                         System.out.println("LINTERNA OBTENIDA");
+                     }
+
+                     if(!huellaEncontrada &&
+                        mx >= huellaX && mx <= huellaX + huellaW &&
+                        my >= huellaY && my <= huellaY + huellaH){
+
+                         huellaEncontrada = true;
+                         System.out.println("HUELLA OBTENIDA");
+                     }
+                 }
+                
+                 if(enPantallaDelJuego){
+                	     mx = e.getX();
+                	     my = e.getY();
+
+                	    // --- Abrir/Cerrar menú ---
+                	    if(mx >= menuX && mx <= menuX + menuW &&
+                	       my >= menuY && my <= menuY + menuH){
+                	        menuJuegoAbierto = !menuJuegoAbierto; // alterna el menú
+                	    }
+
+                	    // --- Opciones del menú ---
+                	    if(menuJuegoAbierto){
+                	        // Reanudar juego
+                	        int reanudarX = 20, reanudarY = 70, reanudarW = 150, reanudarH = 40;
+                	        if(mx >= reanudarX && mx <= reanudarX + reanudarW &&
+                	           my >= reanudarY && my <= reanudarY + reanudarH){
+                	            menuJuegoAbierto = false; // cerrar menú y volver al juego
+                	        }
+
+                	        // Salir al menú principal
+                	        int salirX = 20, salirY = 120, salirW = 150, salirH = 40;
+                	        if(mx >= salirX && mx <= salirX + salirW &&
+                	           my >= salirY && my <= salirY + salirH){
+                	            menuJuegoAbierto = false;
+                	            enPantallaDelJuego = false;
+                	            cambiarAImagenSecundaria(); // vuelve al menú principal
+                	        }
+                	    }
+                	}
+                 
+                 
+                 }
+                
                 }
-            }
+        
+        
         });
         
 
@@ -336,6 +560,13 @@ public class Dibujo extends Canvas {
     	
 	}
     
+    // -------------------------------------------------------------------------------- //
+    
+public boolean tieneTodasLasHerramientas() {
+		return linternaEncontrada && grabadoraEncontrada && pistolaEncontrada &&
+		   documentoEncontrado && huellaEncontrada && fotoEncontrada &&
+		   ganzuasEncontradas && llaveEncontrada;
+}
     
     // ------------------------------------------------------------------------------------------ //
     
@@ -559,7 +790,124 @@ public class Dibujo extends Canvas {
         // Las posiciones de clic para navegar entre pantallas de oficina.
         
         if (enPantallaDelJuego) {
+        	
+        	
+        	
+        	// --------------------------------------------------
+        	// BARRA SUPERIOR DEL JUEGO (HUD)
+        	// --------------------------------------------------
 
+        	Graphics2D gHUD = (Graphics2D) graficos;
+
+        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f));
+        	gHUD.setColor(new Color(20,20,20));
+        	gHUD.fillRect(0,0,getWidth(),70);
+
+        	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+        	
+        
+        	
+        	gHUD.setColor(new Color(120,120,120));
+        	gHUD.fillRoundRect(menuX, menuY, menuW, menuH, 10, 10);
+
+        	gHUD.setColor(Color.WHITE);
+        	gHUD.drawString("MENU", menuX + 30, menuY + 25);
+        	
+        	
+        	
+        	
+        	
+        	
+        	// --------------------------------------------------
+        	// MENU DEL JUEGO
+        	// --------------------------------------------------
+
+        	if(menuJuegoAbierto){
+        	    Graphics2D gMenu = (Graphics2D) graficos;
+        	    gMenu.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.9f));
+
+        	    // Botón Reanudar
+        	    gMenu.setColor(new Color(40,40,40));
+        	    gMenu.fillRoundRect(20,70,150,40,10,10);
+        	    gMenu.setColor(Color.WHITE);
+        	    gMenu.drawString("REANUDAR JUEGO",30,95);
+
+        	    // Botón Salir al menú principal
+        	    gMenu.setColor(new Color(40,40,40));
+        	    gMenu.fillRoundRect(20,120,150,40,10,10);
+        	    gMenu.setColor(Color.WHITE);
+        	    gMenu.drawString("SALIR AL MENÚ",30,145);
+        	}
+        	
+        	// --------------------------------------------------
+        	// INVENTARIO
+        	// --------------------------------------------------
+
+        	int invX = 200;
+        	int invY = 10;
+        	int invSize = 50;
+        	int espacio = 10;
+
+        	gHUD.setColor(new Color(70,70,70));
+
+        	for(int i=0;i<8;i++){
+        	    gHUD.fillRect(invX + i*(invSize+espacio), invY, invSize, invSize);
+        	}
+
+        	// OBJETOS RECOGIDOS
+
+        	int slot = 0;
+        	int tamaño = invSize; // tamaño del slot
+
+        	if(linternaEncontrada){
+        	    if(imgLinterna != null)
+        	        gHUD.drawImage(imgLinterna, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
+        	    slot++;
+        	}
+
+        	if(grabadoraEncontrada){
+        	    if(imgGrabadora != null)
+        	        gHUD.drawImage(imgGrabadora, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
+        	    slot++;
+        	}
+
+        	if(pistolaEncontrada){
+        	    if(imgPistola != null)
+        	        gHUD.drawImage(imgPistola, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
+        	    slot++;
+        	}
+
+        	if(documentoEncontrado){
+        	    if(imgDocumento != null)
+        	        gHUD.drawImage(imgDocumento, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
+        	    slot++;
+        	}
+
+        	if(huellaEncontrada){
+        	    if(imgHuella != null)
+        	        gHUD.drawImage(imgHuella, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
+        	    slot++;
+        	}
+
+        	if(fotoEncontrada){
+        	    if(imgFoto != null)
+        	        gHUD.drawImage(imgFoto, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
+        	    slot++;
+        	}
+
+        	if(ganzuasEncontradas){
+        	    if(imgGanzuas != null)
+        	        gHUD.drawImage(imgGanzuas, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
+        	    slot++;
+        	}
+
+        	if(llaveEncontrada){
+        	    if(imgLlave != null)
+        	        gHUD.drawImage(imgLlave, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
+        	    slot++;
+        	}
+        	// --------------------------------------------------
+        	
             Graphics2D g2d = (Graphics2D) graficos;
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f)); // 35% de transparencia para el efecto de superposición	
             g2d.setColor(new Color (255,255,255,100));
@@ -574,6 +922,10 @@ public class Dibujo extends Canvas {
                 g2d.fillRect(o2_abajoX, o2_abajoY, o2_abajoW, o2_abajoH);
                 g2d.fillRect(o2_derX, o2_derY, o2_derW, o2_derH);
                 g2d.fillRect(o2_izqX, o2_izqY, o2_izqW, o2_izqH); 
+                
+                if (tieneTodasLasHerramientas()) {
+                    g2d.fillRect(o2_arribaX, o2_arribaY, o2_arribaW, o2_arribaH);
+                }
             }
 
             else if (pantallaOficinaActual == 3) {
@@ -593,9 +945,129 @@ public class Dibujo extends Canvas {
             }
 
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+        
+        
+         // --------------------------------------------------
+         // HOVER OBJETOS
+         // --------------------------------------------------
+
+        
+
+         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.30f));
+         g2d.setColor(new Color(255,255,0));
+
+         Point mouse = raton.getPosicion();
+
+         int mx = (int) mouse.getX();
+         int my = (int) mouse.getY();
+
+         g2d.setColor(Color.RED);
+         
+         if(pantallaOficinaActual == 1){
+
+             if(!ganzuasEncontradas &&
+                mx >= ganzuaX && mx <= ganzuaX + ganzuaW &&
+                my >= ganzuaY && my <= ganzuaY + ganzuaH){
+
+                 g2d.fillOval(ganzuaX, ganzuaY, ganzuaW, ganzuaH);
+             }
+
+             if(!grabadoraEncontrada &&
+                mx >= grabadoraX && mx <= grabadoraX + grabadoraW &&
+                my >= grabadoraY && my <= grabadoraY + grabadoraH){
+
+                 g2d.fillOval(grabadoraX, grabadoraY, grabadoraW, grabadoraH);
+             }
+
+             if(!pistolaEncontrada &&
+                mx >= pistolaX && mx <= pistolaX + pistolaW &&
+                my >= pistolaY && my <= pistolaY + pistolaH){
+
+                 g2d.fillOval(pistolaX, pistolaY, pistolaW, pistolaH);
+             }
+         }
+         
+         
+         if(pantallaOficinaActual == 3){
+
+			 if(!documentoEncontrado &&
+				mx >= documentoX && mx <= documentoX + documentoW &&
+				my >= documentoY && my <= documentoY + documentoH){
+
+				 g2d.fillOval(documentoX, documentoY, documentoW, documentoH);
+			 }
+
+			 if(!llaveEncontrada &&
+				mx >= llaveX && mx <= llaveX + llaveW &&
+				my >= llaveY && my <= llaveY + llaveH){
+
+				 g2d.fillOval(llaveX, llaveY, llaveW, llaveH);
+			 }
+
+			 if(!fotoEncontrada &&
+				mx >= fotoX && mx <= fotoX + fotoW &&
+				my >= fotoY && my <= fotoY + fotoH){
+
+				 g2d.fillOval(fotoX, fotoY, fotoW, fotoH);
+			 }
+		 }
+         
+         
+         if(pantallaOficinaActual == 4){
+
+			 if(!linternaEncontrada &&
+				mx >= linternaX && mx <= linternaX + linternaW &&
+				my >= linternaY && my <= linternaY + linternaH){
+
+				 g2d.fillOval(linternaX, linternaY, linternaW, linternaH);
+			 }
+
+			 if(!huellaEncontrada &&
+				mx >= huellaX && mx <= huellaX + huellaW &&
+				my >= huellaY && my <= huellaY + huellaH){
+
+				 g2d.fillOval(huellaX, huellaY, huellaW, huellaH);
+			 }
+
+			
+		 }
+         
+         
+         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+        
+       
+        
         }
         
+        // --------------------------------------------------------------------------------------- //
+        // Mensaje de pantalla 
+        // --------------------------------------------------------------------------------------- //
         
+        if (mostrarMensaje) {
+            Graphics2D gMsg = (Graphics2D) graficos;
+            gMsg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Fondo del mensaje semitransparente
+            gMsg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.88f));
+            gMsg.setColor(new Color(20, 20, 20));
+            gMsg.fillRoundRect(mensajeX, mensajeY, mensajeW, mensajeH, 18, 18);
+
+            // Borde dorado
+            gMsg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+            gMsg.setColor(new Color(200, 160, 30));
+            gMsg.drawRoundRect(mensajeX, mensajeY, mensajeW, mensajeH, 18, 18);
+
+            // Texto del mensaje
+            gMsg.setColor(Color.WHITE);
+            gMsg.setFont(new Font("Arial", Font.ITALIC, 15));
+            gMsg.drawString(textoMensaje, mensajeX + 20, mensajeY + 35);
+
+            // Indicación para cerrar
+            gMsg.setColor(new Color(160, 160, 160));
+            gMsg.setFont(new Font("Arial", Font.PLAIN, 11));
+            gMsg.drawString("[ Click para cerrar ]", mensajeX + 130, mensajeY + 60);
+        }
+    
         
 
         
