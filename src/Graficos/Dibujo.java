@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,6 +14,8 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -132,7 +135,7 @@ public class Dibujo extends Canvas {
 	// Obtención de objetos más mensaje
     private boolean mostrarMensaje = false;
     private String textoMensaje = "";
-    private int mensajeX = 200, mensajeY = 220, mensajeW = 400, mensajeH = 80; // Área del mensaje (para poder cerrarlo al hacer click encima)
+    private int mensajeX = 80, mensajeY = 190, mensajeW = 640, mensajeH = 130; // Área del mensaje (para poder cerrarlo al hacer click encima)
 
     public Dibujo(int ancho, int alto, long tiempoInicio, JFrame ventana) {
         setPreferredSize(new Dimension(ancho, alto));
@@ -570,6 +573,32 @@ public boolean tieneTodasLasHerramientas() {
     
     // ------------------------------------------------------------------------------------------ //
     
+public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMaximo) {
+    List<String> lineas = new ArrayList<>();
+    FontMetrics fm = g.getFontMetrics();
+
+    String[] palabras = texto.split(" ");
+    StringBuilder lineaActual = new StringBuilder();
+
+    for (String palabra : palabras) {
+        String prueba = lineaActual.length() == 0 ? palabra : lineaActual + " " + palabra;
+        if (fm.stringWidth(prueba) <= anchoMaximo) {
+            lineaActual = new StringBuilder(prueba);
+        } else {
+            if (lineaActual.length() > 0) {
+                lineas.add(lineaActual.toString());
+            }
+            lineaActual = new StringBuilder(palabra);
+        }
+    }
+    if (lineaActual.length() > 0) {
+        lineas.add(lineaActual.toString());
+    }
+    return lineas;
+}
+
+
+ // ------------------------------------------------------------------------------------------ //
     
     public void cambiarAImagenSecundaria() {
         imagenActual = imagenSecundaria;
@@ -1042,30 +1071,49 @@ public boolean tieneTodasLasHerramientas() {
         // --------------------------------------------------------------------------------------- //
         // Mensaje de pantalla 
         // --------------------------------------------------------------------------------------- //
-        
         if (mostrarMensaje) {
             Graphics2D gMsg = (Graphics2D) graficos;
             gMsg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // Fondo del mensaje semitransparente
+            Font fuenteTexto = new Font("Arial", Font.ITALIC, 15);
+            gMsg.setFont(fuenteTexto);
+
+            // Margen interno del cuadro
+            int margen         = 20;
+            int anchoTexto     = mensajeW - margen * 2;
+            int alturaLinea    = 22; // espacio entre líneas en px
+
+            // Partir el texto en líneas que quepan en el cuadro
+            List<String> lineas = partirTextoEnLineas(gMsg, textoMensaje, anchoTexto);
+
+            // Altura dinámica: líneas * alturaLinea + espacio para "click para cerrar" + márgenes
+            int alturaCuadro = margen + lineas.size() * alturaLinea + 30;
+
+            // Fondo oscuro semitransparente
             gMsg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.88f));
             gMsg.setColor(new Color(20, 20, 20));
-            gMsg.fillRoundRect(mensajeX, mensajeY, mensajeW, mensajeH, 18, 18);
+            gMsg.fillRoundRect(mensajeX, mensajeY, mensajeW, alturaCuadro, 18, 18);
 
             // Borde dorado
             gMsg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
             gMsg.setColor(new Color(200, 160, 30));
-            gMsg.drawRoundRect(mensajeX, mensajeY, mensajeW, mensajeH, 18, 18);
+            gMsg.drawRoundRect(mensajeX, mensajeY, mensajeW, alturaCuadro, 18, 18);
 
-            // Texto del mensaje
+            // Dibujar cada línea de texto
             gMsg.setColor(Color.WHITE);
-            gMsg.setFont(new Font("Arial", Font.ITALIC, 15));
-            gMsg.drawString(textoMensaje, mensajeX + 20, mensajeY + 35);
+            gMsg.setFont(fuenteTexto);
+            for (int i = 0; i < lineas.size(); i++) {
+                gMsg.drawString(lineas.get(i), mensajeX + margen, mensajeY + margen + (i + 1) * alturaLinea);
+            }
 
             // Indicación para cerrar
             gMsg.setColor(new Color(160, 160, 160));
             gMsg.setFont(new Font("Arial", Font.PLAIN, 11));
-            gMsg.drawString("[ Haz click para cerrar el mensaje ]", mensajeX + 130, mensajeY + 60);
+            gMsg.drawString("[ Haz click aquí para cerrar el mensaje ]",
+                            mensajeX + margen, mensajeY + alturaCuadro - 10);
+
+            // Actualizar el área de click de cierre con la altura real del cuadro
+            mensajeH = alturaCuadro;
         }
     
         
