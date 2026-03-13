@@ -70,6 +70,7 @@ public class Dibujo extends Canvas {
 	private int pantallaOficinaActual = 0;
 	private Sonido musicaOficina;
 	private Sonido musicaPuerto;
+	private Sonido musicaDemo;
 	// Botón menú dentro del juego
 	private int menuX = 20, menuY = 15, menuW = 100, menuH = 40;
 	private boolean menuJuegoAbierto = false;
@@ -101,6 +102,9 @@ public class Dibujo extends Canvas {
 	
 	// Puerto 2 zona inferior (Puerto2 -> Puerto1)
 	private int p2_abajoX = 0,   p2_abajoY = 500, p2_abajoW = 800, p2_abajoH = 100;
+	
+	// Pantalla "final"
+	private int p2_demoX = 130, p2_demoY = 390, p2_demoW = 80, p2_demoH = 80;
 	
 	// --------------------------------------------------
 	// OBJETOS DEL JUEGO
@@ -400,7 +404,27 @@ public class Dibujo extends Canvas {
                             System.out.println("Puerto2 -> Puerto1");
                             cambiarAPuerto1();
                         }
+
+                        //  zona Demo DENTRO del bloque de Puerto2
+                        if (mx >= p2_demoX && mx <= p2_demoX + p2_demoW &&
+                            my >= p2_demoY && my <= p2_demoY + p2_demoH) {
+                            if (ganzuasEncontradas) {
+                                System.out.println("Puerto2 -> Demo");
+                                cambiarADemo();
+                            } else {
+                                textoMensaje = "Necesito mi ganzúa para poder abrir esta puerta.";
+                                mostrarMensaje = true;
+                            }
+                        }
                     }
+
+                    // Aquí he movido: Demo en su propio else if de la cadena principal
+                    else if (pantallaOficinaActual == 7) {
+                        System.out.println("Demo -> Menú");
+                        cambiarAMenuPrincipal();
+                    }
+                    
+                    
                 
                  // --------------------------------------------------
                  // OBJETOS OFICINA 1
@@ -577,13 +601,13 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
     List<String> lineas = new ArrayList<>(); // Lista para almacenar las líneas resultantes
     FontMetrics fm = g.getFontMetrics(); // Para medir el ancho del texto con la fuente actual
 
-    String[] palabras = texto.split(" ");
-    StringBuilder lineaActual = new StringBuilder();
+    String[] palabras = texto.split(" "); // Divide el texto en palabras 
+    StringBuilder lineaActual = new StringBuilder(); // StringBuilder para construir la línea actual de texto
 
     for (String palabra : palabras) {
-        String prueba = lineaActual.length() == 0 ? palabra : lineaActual + " " + palabra;
-        if (fm.stringWidth(prueba) <= anchoMaximo) {
-            lineaActual = new StringBuilder(prueba);
+        String prueba = lineaActual.length() == 0 ? palabra : lineaActual + " " + palabra;  // Agrega la palabra a la línea actual para probar si cabe dentro del ancho máximo
+        if (fm.stringWidth(prueba) <= anchoMaximo) {    
+            lineaActual = new StringBuilder(prueba); 
         } else {
             if (lineaActual.length() > 0) {
                 lineas.add(lineaActual.toString());
@@ -600,6 +624,26 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
 
  // ------------------------------------------------------------------------------------------ //
     
+public void cambiarAMenuPrincipal() {
+    imagenActual = imagenSecundaria;
+    cambioRealizado    = true;
+    enPantallaDelJuego = false;
+    enPantallaOpciones = false;
+    pantallaOficinaActual = 0;
+
+    // Detener toda la música antes de arrancar la del menú
+    detenerMusica();
+    detenerMusicaOficina();
+    detenerMusicaPuerto();
+    detenerMusicaDemo();
+
+    // Aquí he cambiado: siempre se crea una nueva instancia para garantizar que suene
+    musicaFondo = new Sonido("recursos/musica/Custodes Abyssi.wav");
+    if (musicaFondo != null) musicaFondo.reproducir(true);
+}
+
+
+
     public void cambiarAImagenSecundaria() {
         imagenActual = imagenSecundaria;
         cambioRealizado = true; 
@@ -694,6 +738,20 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
 		iniciarMusicaPuerto();
 	}
 	 
+	 public void cambiarADemo() {
+	        imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Demo.jpg");
+	        cambioRealizado = true;
+	        enPantallaDelJuego = true;
+	        pantallaOficinaActual = 7;
+	 
+	        // Detener toda la música anterior y arrancar la canción de la Demo
+	        detenerMusica();
+	        detenerMusicaOficina();
+	        detenerMusicaPuerto();
+	        musicaDemo = new Sonido("recursos/musica/La Lista de Array.wav");
+	        if (musicaDemo != null) musicaDemo.reproducir(true);
+	    }
+	 
     // ------------------------------------------------------------------------------------------ //
 	 
 	 // Musica de los escenarios
@@ -718,7 +776,7 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
         }
     
     
-    private void iniciarMusicaPuerto() {
+    public void iniciarMusicaPuerto() {
         if (musicaPuerto == null) {
             musicaPuerto = new Sonido("recursos/musica/Resonare.wav");
         }
@@ -727,13 +785,18 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
         }
     }
     
-    private void detenerMusicaPuerto() {
+    public void detenerMusicaPuerto() {
 		if (musicaPuerto != null) {
 			musicaPuerto.detener();
 			musicaPuerto = null; // Libera recursos de la musica para que pueda volver a cargar la música
 		}
 	}
     
+    private void detenerMusicaDemo() {
+        if (musicaDemo != null) { musicaDemo.detener(); musicaDemo = null; }
+    }
+    
+   
     // ------------------------------------------------------------------------------------------ //
     
     public void cambiarAImagenOpciones() {
@@ -820,6 +883,7 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
         
         if (enPantallaDelJuego) {
         	
+        	if (pantallaOficinaActual != 7) {
         	
         	
         	// --------------------------------------------------
@@ -935,6 +999,9 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
         	        gHUD.drawImage(imgLlave, invX + slot*(invSize+espacio), invY, tamaño, tamaño, null);
         	    slot++;
         	}
+        	
+        	}
+        
         	// --------------------------------------------------
         	
             Graphics2D g2d = (Graphics2D) graficos;
@@ -971,6 +1038,8 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
             }
             else if (pantallaOficinaActual == 6) {
                 g2d.fillRect(p2_abajoX, p2_abajoY, p2_abajoW, p2_abajoH);
+                
+                if (ganzuasEncontradas) g2d.fillRect(p2_demoX, p2_demoY, p2_demoW, p2_demoH);
             }
 
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
@@ -1060,6 +1129,15 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
 
 			
 		 }
+         
+         if (pantallaOficinaActual == 6) {
+
+        	    if (mx >= p2_demoX && mx <= p2_demoX + p2_demoW &&
+        	        my >= p2_demoY && my <= p2_demoY + p2_demoH) {
+
+        	        g2d.fillOval(p2_demoX, p2_demoY, p2_demoW, p2_demoH);
+        	    }
+        	}
          
          
          g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));

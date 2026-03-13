@@ -2,6 +2,7 @@ package herramientas;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.imageio.ImageIO;
 
 public class CargadorRecursos {
@@ -11,7 +12,7 @@ public class CargadorRecursos {
 
         try {
             // Ruta relativa a tu proyecto
-            imagenTemporal = ImageIO.read(new File(ruta));
+            imagenTemporal = ImageIO.read(new File(ruta)); 
             if (imagenTemporal == null) {
                 System.err.println("No se pudo cargar la imagen: revisar la ruta o el nombre del archivo");
             }

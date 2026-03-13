@@ -33,7 +33,7 @@ public class ControlPrincipal {
 	// ------------------------------------------------------------------------------------------------ //
 	
 	private static void inicializar() {
-		long tiempoActual = System.currentTimeMillis();
+		long tiempoActual = System.currentTimeMillis(); 
 
         // Aquí cambié: Creo la ventana primero sin canvas, luego paso la ventana a Dibujo, y agrego manualmente
         Ventana ventana = new Ventana("UMBRAE", null);  // Paso null temporalmente
