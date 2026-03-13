@@ -12,10 +12,8 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-
 import Principal.ControlPrincipal;
 import control.Raton;
 import herramientas.CargadorRecursos;
@@ -69,7 +67,8 @@ public class Dibujo extends Canvas {
 	// Botón menú dentro del juego
 	private int menuX = 20, menuY = 15, menuW = 100, menuH = 40;
 	private boolean menuJuegoAbierto = false;
-
+	private boolean mensajeMostrado = false; // Para mostrar un mensaje de bienvenida solo la primera vez que se entra a una oficina
+	
     // ----------------------------------------------------------------------- //
     // Zonas de clic para navegar entre pantallas de oficina
     // ----------------------------------------------------------------------- //
@@ -542,6 +541,9 @@ public class Dibujo extends Canvas {
     
     // ------------------------------------------------------------------------------------------ //
     
+ 
+    
+    
     // Escenarios Oficinas
     
     public void cambiarAOficina1() {
@@ -771,14 +773,20 @@ public class Dibujo extends Canvas {
         	gHUD.drawString("MENU", menuX + 30, menuY + 25);
         	
         	
-        	
+        	if(!mensajeMostrado) {
+			    gHUD.setColor(new Color(255,255,255,200));
+			    gHUD.fillRect(150, 200, 500, 100);
+			    gHUD.setColor(Color.BLACK);
+			    gHUD.drawString("¡Bienvenido a la oficina!", 170, 250);
+			    mensajeMostrado = true; // Para que el mensaje solo se muestre la primera vez que se entra a una oficina
+			}
         	
         	
         	
         	// --------------------------------------------------
         	// MENU DEL JUEGO
-        	// --------------------------------------------------
-
+        	// -------------------------------------------------
+        	
         	if(menuJuegoAbierto){
         	    Graphics2D gMenu = (Graphics2D) graficos;
         	    gMenu.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.9f));
