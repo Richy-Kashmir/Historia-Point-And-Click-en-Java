@@ -16,10 +16,8 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-
 import Principal.ControlPrincipal;
 import control.Raton;
 import herramientas.CargadorRecursos;
@@ -63,10 +61,7 @@ public class Dibujo extends Canvas {
 	private BufferedImage imgGanzuas;
 	private BufferedImage imgLlave;
 	
-	
-	
 	private boolean enPantallaDelJuego = false;
-	
 	private int pantallaOficinaActual = 0;
 	private Sonido musicaOficina;
 	private Sonido musicaPuerto;
@@ -78,50 +73,29 @@ public class Dibujo extends Canvas {
     // Zonas de clic para navegar entre pantallas de oficina
     // ----------------------------------------------------------------------- //
 
-    // Oficina 1 zona inferior  (Oficina1 <-> Oficina2)
-	private int o1_abajoX = 5, o1_abajoY = 500, o1_abajoW = 800, o1_abajoH = 800;
-
-    // Oficina 2 zona inferior (Oficina2 -> Caulquier otra oficina más el puerto1 / Cualquier otra oficina -> Oficina2)
-	private int o2_abajoX = 5, o2_abajoY = 500, o2_abajoW = 800, o2_abajoH = 800;
+	private int o1_abajoX = 5, o1_abajoY = 500, o1_abajoW = 800, o1_abajoH = 800;// Oficina 1 zona inferior  (Oficina1 <-> Oficina2)
+	private int o2_abajoX = 5, o2_abajoY = 500, o2_abajoW = 800, o2_abajoH = 800;// Oficina 2 zona inferior (Oficina2 -> Caulquier otra oficina más el puerto1 / Cualquier otra oficina -> Oficina2)
 	private int o2_derX = 550, o2_derY = 150, o2_derW = 100, o2_derH = 280;
 	private int o2_izqX = 130, o2_izqY = 150, o2_izqW = 100, o2_izqH = 280;
-	private int o2_arribaX = 360, o2_arribaY = 150, o2_arribaW = 80, o2_arribaH = 220; // Para ir al puerto1 
-
-    // Oficina 3 zona izquierda (Oficina2 -> Oficina3 / Oficina3 -> Oficina2)
-	private int o3_izqX = 5, o3_izqY = 0, o3_izqW = 120, o3_izqH = 800;
-	
-	// Ofina 4 zona derecha (Oficina2 -> Oficina4 / Oficina4 -> Oficina2)
-	private int o4_derX = 700, o4_derY = 0, o4_derW = 800, o4_derH = 800;
-	
-	// Puerto 1 zona centro (Puerto1 -> Puerto2)
-	private int p1_centroX = 200, p1_centroY = 180, p1_centroW = 400, p1_centroH = 240;
-	
-	// Puerto 1 zona inferior (Puerto1 -> Oficina2)
-	private int p1_abajoX = 0,   p1_abajoY = 500, p1_abajoW = 800, p1_abajoH = 100;
-	
-	// Puerto 2 zona inferior (Puerto2 -> Puerto1)
-	private int p2_abajoX = 0,   p2_abajoY = 500, p2_abajoW = 800, p2_abajoH = 100;
+	private int o2_arribaX = 360, o2_arribaY = 150, o2_arribaW = 80, o2_arribaH = 220; // Para ir al puerto1 desde oficina2 (Aquí he agregado el botón para ir al puerto1 desde oficina2, antes solo se podía ir al puerto1 desde oficina1)
+	private int o3_izqX = 5, o3_izqY = 0, o3_izqW = 120, o3_izqH = 800; // Oficina 3 zona izquierda (Oficina2 -> Oficina3 / Oficina3 -> Oficina2)
+	private int o4_derX = 700, o4_derY = 0, o4_derW = 800, o4_derH = 800; // Ofina 4 zona derecha (Oficina2 -> Oficina4 / Oficina4 -> Oficina2)
+	private int p1_centroX = 200, p1_centroY = 180, p1_centroW = 400, p1_centroH = 240; // Puerto 1 zona centro (Puerto1 -> Puerto2)
+	private int p1_abajoX = 0,   p1_abajoY = 500, p1_abajoW = 800, p1_abajoH = 100;// Puerto 1 zona inferior (Puerto1 -> Oficina2)
+	private int p2_abajoX = 0,   p2_abajoY = 500, p2_abajoW = 800, p2_abajoH = 100;// Puerto 2 zona inferior (Puerto2 -> Puerto1)
 	
 	// --------------------------------------------------
 	// OBJETOS DEL JUEGO
 	// --------------------------------------------------
 
-	// OFICINA 1
-	private int ganzuaX = 240, ganzuaY = 350, ganzuaW = 60, ganzuaH = 60;
-	private int grabadoraX = 440, grabadoraY = 160, grabadoraW = 60, grabadoraH = 60;
-	private int pistolaX = 640, pistolaY = 450, pistolaW = 70, pistolaH = 70;
-
-	// OFICINA 3
-	private int documentoX = 700, documentoY = 550, documentoW = 60, documentoH = 60;
-	private int llaveX = 450, llaveY = 350, llaveW = 60, llaveH = 60;
-	private int fotoX = 120, fotoY = 320, fotoW = 60, fotoH = 60;
-
-	// OFICINA 4
-	private int linternaX = 350, linternaY = 350, linternaW = 60, linternaH = 60;
-	private int huellaX = 560, huellaY = 380, huellaW = 60, huellaH = 60;
-
-
-	// OBJETOS ENCONTRADOS
+	private int ganzuaX = 240, ganzuaY = 350, ganzuaW = 60, ganzuaH = 60;  // OFICINA 1
+	private int grabadoraX = 440, grabadoraY = 160, grabadoraW = 60, grabadoraH = 60; // OFICINA 1
+	private int pistolaX = 640, pistolaY = 450, pistolaW = 70, pistolaH = 70; // OFICINA 1
+	private int documentoX = 700, documentoY = 550, documentoW = 60, documentoH = 60; // OFICINA 3
+	private int llaveX = 450, llaveY = 350, llaveW = 60, llaveH = 60; // OFICINA 3
+	private int fotoX = 120, fotoY = 320, fotoW = 60, fotoH = 60; // OFICINA 3
+	private int linternaX = 350, linternaY = 350, linternaW = 60, linternaH = 60;// OFICINA 4
+	private int huellaX = 560, huellaY = 380, huellaW = 60, huellaH = 60; // OFICINA 4
 	private boolean linternaEncontrada = false;
 	private boolean grabadoraEncontrada = false;
 	private boolean pistolaEncontrada = false;
@@ -130,29 +104,45 @@ public class Dibujo extends Canvas {
 	private boolean fotoEncontrada = false;
 	private boolean ganzuasEncontradas = false;
 	private boolean llaveEncontrada = false;
-    
-	
-	// Obtención de objetos más mensaje
-    private boolean mostrarMensaje = false;
+    private boolean mostrarMensaje = false;// Obtención de objetos más mensaje
     private String textoMensaje = "";
     private int mensajeX = 80, mensajeY = 190, mensajeW = 640, mensajeH = 130; // Área del mensaje (para poder cerrarlo al hacer click encima)
 
+ // CONTADOR DE PRUEBAS
+    private String totalPruebas = " ? ";
+    private int pruebasEncontradas = 0;
+    
+    
+    
+    // Animación objeto recogido
+    private BufferedImage objetoAnimado = null;
+    private int animX, animY;
+    private int animDestinoX, animDestinoY;
+    private boolean animandoObjeto = false;
+ // INVENTARIO HUD
+    private int invX = 200;
+    private int invY = 10;
+    private int invSize = 50;
+    private int espacio = 10;
+
+ // MENSAJE CUANDO SE RECOGE UN OBJETO
+    private String mensajeObjeto = "";
+    private int tiempoMensaje = 0;
+    
+    
+    
     public Dibujo(int ancho, int alto, long tiempoInicio, JFrame ventana) {
         setPreferredSize(new Dimension(ancho, alto));
         this.tiempoInicio = tiempoInicio; // asignamos el tiempo de inicio para la duración de la presentación
         this.ventana = ventana; // asisgnamos la referencia a la ventana para poder cambiar el título después de la presentación
         TransformadorImagenes transformador = new TransformadorImagenes();
         
-        imagenInicial = CargadorRecursos.cargarImagen("recursos/imagenes/Presentacion.jpg");
-       
-        imagenSecundaria = CargadorRecursos.cargarImagen("recursos/imagenes/Menu.png");
-     
-        imagenOpciones = CargadorRecursos.cargarImagen("recursos/imagenes/opciones.png");
+        	imagenInicial = CargadorRecursos.cargarImagen("recursos/imagenes/Presentacion.jpg");
+        	imagenSecundaria = CargadorRecursos.cargarImagen("recursos/imagenes/Menu.png");
+        	imagenOpciones = CargadorRecursos.cargarImagen("recursos/imagenes/opciones.png");
+	        	 
+			imagenActual = imagenInicial; // Escala la imagen a la mitad de su tamaño original para que se ajuste mejor a la ventana (y se vea más nítida)
         
-	        	 // Escala la imagen a la mitad de su tamaño original
-			imagenActual = imagenInicial; // Comienza con la imagen inicial
-        
-			
 			imagenLupa 	  = CargadorRecursos.cargarImagen("recursos/imagenes/lupa.png");
 			imgLinterna   = CargadorRecursos.cargarImagen("recursos/imagenes/Linterna.jpeg");
 			imgGrabadora  = CargadorRecursos.cargarImagen("recursos/imagenes/Grabadora.jpeg");
@@ -164,44 +154,33 @@ public class Dibujo extends Canvas {
 			imgLlave      = CargadorRecursos.cargarImagen("recursos/imagenes/Llaves.jpeg");
 			
 			
-			
-			
-			
 			if (imagenLupa != null) {
 
 			    java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit(); // Obtiene el toolkit para crear un cursor personalizado
-
 			    java.awt.Point puntoHotspot = new java.awt.Point(0, 0);
-
 			    java.awt.Cursor cursorLupa = toolkit.createCustomCursor(
 			            imagenLupa,
 			            puntoHotspot,
 			            "CursorLupa"
 			    );
-
 			    setCursor(cursorLupa);
 
 			} else {
 			    System.out.println("Error cargando la imagen de la lupa");
 			}
 			
-			
-		
 			// Para hacer el cursor invisible, creamos una imagen transparente de 1x1 píxel y la usamos como cursor
-			BufferedImage cursorInvisible = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
-			Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorInvisible,new Point(0,0),"blank"); 
-			setCursor(blankCursor);
+		BufferedImage cursorInvisible = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
+		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorInvisible,new Point(0,0),"blank"); 
+		setCursor(blankCursor);
 			
 
        
-        musicaFondo = new Sonido("recursos/musica/Custodes Abyssi.wav"); // Carga la música de fondo
-       
+        	musicaFondo = new Sonido("recursos/musica/Custodes Abyssi.wav"); // Carga la música de fondo 
+        	musicaOficina = new Sonido("recursos/musica/Interator.wav");
+        	musicaPuerto  = new Sonido("recursos/musica/Resonare.wav");
         
-        musicaOficina = new Sonido("recursos/musica/Interator.wav");
-        
-        musicaPuerto  = new Sonido("recursos/musica/Resonare.wav");
-
-        raton = new Raton(this); // Inicializa el objeto ratón para rastrear la posición del cursor
+        	raton = new Raton(this); // Inicializa el objeto ratón para rastrear la posición del cursor
 
         // --------------------------------------------------------------- //
         // Listener de clics
@@ -213,7 +192,6 @@ public class Dibujo extends Canvas {
                     int mx = e.getX();
                     int my = e.getY();
 
-                    
                     if (mostrarMensaje) {
                         if (mx >= mensajeX && mx <= mensajeX + mensajeW &&
                             my >= mensajeY && my <= mensajeY + mensajeH) {
@@ -221,7 +199,6 @@ public class Dibujo extends Canvas {
                         }
                         return; // Hasta no hacer click en el mensaje no se podrá hacer nada
                     }
-                    
             
                     // --- Botones del MENÚ (solo si NO estamos en el juego) ---
                     if (!enPantallaDelJuego) {
@@ -298,11 +275,7 @@ public class Dibujo extends Canvas {
                         		    enPantallaDelJuego = false;
                         		    cambiarAImagenSecundaria();
                         		}
-                    
-                     
-                        
                     }
-                    
 
                     // --------------------------------------------------------------- //
                     // Navegación entre pantallas de oficina
@@ -315,7 +288,6 @@ public class Dibujo extends Canvas {
                             cambiarAOficina2();
                         }
                     }
-
                     // OFICINA 2
                     else if (pantallaOficinaActual == 2) {
 
@@ -371,18 +343,15 @@ public class Dibujo extends Canvas {
 
                             cambiarAOficina2();
                         }
-                    
                         
                     }
                     else if (pantallaOficinaActual == 5) {
-
                         // Centro -> Puerto2
                         if (mx >= p1_centroX && mx <= p1_centroX + p1_centroW &&
                             my >= p1_centroY && my <= p1_centroY + p1_centroH) {
                             System.out.println("Puerto1 -> Puerto2");
                             cambiarAPuerto2();
                         }
-
                         // Aquí he cambiado: abajo vuelve a Oficina2 (antes era Oficina1)
                         if (mx >= p1_abajoX && mx <= p1_abajoX + p1_abajoW &&
                             my >= p1_abajoY && my <= p1_abajoY + p1_abajoH) {
@@ -390,8 +359,7 @@ public class Dibujo extends Canvas {
                             cambiarAOficina2();
                         }
                     }
-
-                    // Aquí he agregado: PUERTO 2
+                    	// Aquí he agregado: PUERTO 2
                     else if (pantallaOficinaActual == 6) {
 
                         // Abajo -> Puerto1
@@ -401,7 +369,6 @@ public class Dibujo extends Canvas {
                             cambiarAPuerto1();
                         }
                     }
-                
                  // --------------------------------------------------
                  // OBJETOS OFICINA 1
                  // --------------------------------------------------
@@ -412,94 +379,83 @@ public class Dibujo extends Canvas {
                              my >= ganzuaY && my <= ganzuaY + ganzuaH) {
                              if (llaveEncontrada) {
                                  ganzuasEncontradas = true;
-                                 System.out.println("GANZUAS OBTENIDAS");
+                                 System.out.println("+ GANZUAS OBTENIDAS");
                              } else {
                                  textoMensaje = "Si no mal me equivoco aquí esta mi ganzúa, pero necesito la llave para poder acceder a ella";
                                  mostrarMensaje = true;
                              }
-                         }
-                     
-
-                     if(!grabadoraEncontrada &&
-                        mx >= grabadoraX && mx <= grabadoraX + grabadoraW &&
-                        my >= grabadoraY && my <= grabadoraY + grabadoraH){
-
-                         grabadoraEncontrada = true;
-                         System.out.println("GRABADORA OBTENIDA");
                      }
+                     if(!grabadoraEncontrada &&
+                    		 mx >= grabadoraX && mx <= grabadoraX + grabadoraW &&
+                    		 my >= grabadoraY && my <= grabadoraY + grabadoraH){
 
+                         		grabadoraEncontrada = true;
+                         		System.out.println("+ GRABADORA OBTENIDA");
+                     }
                      if (!pistolaEncontrada &&
                              mx >= pistolaX && mx <= pistolaX + pistolaW &&
                              my >= pistolaY && my <= pistolaY + pistolaH) {
-                             if (llaveEncontrada) {
+                         if (llaveEncontrada) {
                                  pistolaEncontrada = true;
-                                 System.out.println("PISTOLA OBTENIDA");
+                                 System.out.println("+ PISTOLA OBTENIDA");
                              } else {
-                                 textoMensaje = "Aquí esta mi pistola, me sera util para defenderme, pero necesito la llave para poder acceder a ella";
+                                 textoMensaje = "Aquí esta mi pistola, me sera util para defenderme, pero necesito la llave para poder acceder a ella (BUSCA LA LLAVE)";
                                  mostrarMensaje = true;
                              }
                          }
                  }
-
-
                  // --------------------------------------------------
                  // OBJETOS OFICINA 3
                  // --------------------------------------------------
                  if(pantallaOficinaActual == 3){
 
                      if(!documentoEncontrado &&
-                        mx >= documentoX && mx <= documentoX + documentoW &&
-                        my >= documentoY && my <= documentoY + documentoH){
+                    		 mx >= documentoX && mx <= documentoX + documentoW &&
+                    		 my >= documentoY && my <= documentoY + documentoH){
 
-                         documentoEncontrado = true;
-                         System.out.println("DOCUMENTO OBTENIDO");
+                    	 		documentoEncontrado = true;
+                    	 		System.out.println("+ DOCUMENTO OBTENIDO");
                      }
 
                      if(!llaveEncontrada &&
-                        mx >= llaveX && mx <= llaveX + llaveW &&
-                        my >= llaveY && my <= llaveY + llaveH){
+                    		 mx >= llaveX && mx <= llaveX + llaveW &&
+                    		 my >= llaveY && my <= llaveY + llaveH){
 
-                         llaveEncontrada = true;
-                         System.out.println("LLAVE OBTENIDA");
-                         
-                         
+                         		llaveEncontrada = true;
+                         		System.out.println("+ LLAVE OBTENIDA");  
                      }
 
                      if(!fotoEncontrada &&
-                        mx >= fotoX && mx <= fotoX + fotoW &&
-                        my >= fotoY && my <= fotoY + fotoH){
+                    		 mx >= fotoX && mx <= fotoX + fotoW &&
+                    		 my >= fotoY && my <= fotoY + fotoH){
 
-                         fotoEncontrada = true;
-                         System.out.println("FOTO OBTENIDA");
+                    	 		fotoEncontrada = true;
+                    	 		System.out.println("+ FOTO OBTENIDA");
                      }
                  }
-
-
                  // --------------------------------------------------
                  // OBJETOS OFICINA 4
                  // --------------------------------------------------
                  if(pantallaOficinaActual == 4){
 
-                     if(!linternaEncontrada &&
-                        mx >= linternaX && mx <= linternaX + linternaW &&
-                        my >= linternaY && my <= linternaY + linternaH){
+                 	if(!linternaEncontrada &&
+                 			mx >= linternaX && mx <= linternaX + linternaW &&
+                 			my >= linternaY && my <= linternaY + linternaH){  
 
-                    	 	linternaEncontrada = true;
-                         System.out.println("LINTERNA OBTENIDA");
+                    	 		linternaEncontrada = true;
+                    	 		System.out.println("+ LINTERNA OBTENIDA");
                      }
-
                      if(!huellaEncontrada &&
-                        mx >= huellaX && mx <= huellaX + huellaW &&
-                        my >= huellaY && my <= huellaY + huellaH){
+                    		mx >= huellaX && mx <= huellaX + huellaW &&
+                    		my >= huellaY && my <= huellaY + huellaH){
 
-                         huellaEncontrada = true;
-                         System.out.println("HUELLA OBTENIDA");
-                     }
-                 }
-                
-                 if(enPantallaDelJuego){
-                	     mx = e.getX();
-                	     my = e.getY();
+                         		huellaEncontrada = true;
+                         		System.out.println("+ HUELLA OBTENIDA");
+                     	}
+                 	} 
+                 	if(enPantallaDelJuego){
+                	     	mx = e.getX();
+                	     	my = e.getY();
 
                 	    // --- Abrir/Cerrar menú ---
                 	    if(mx >= menuX && mx <= menuX + menuW &&
@@ -511,29 +467,23 @@ public class Dibujo extends Canvas {
                 	    if(menuJuegoAbierto){
                 	        // Reanudar juego
                 	        int reanudarX = 20, reanudarY = 70, reanudarW = 150, reanudarH = 40;
-                	        if(mx >= reanudarX && mx <= reanudarX + reanudarW &&
-                	           my >= reanudarY && my <= reanudarY + reanudarH){
-                	            menuJuegoAbierto = false; // cerrar menú y volver al juego
+                	        	if(mx >= reanudarX && mx <= reanudarX + reanudarW &&
+                	        		my >= reanudarY && my <= reanudarY + reanudarH){
+                	        		menuJuegoAbierto = false; // cerrar menú y volver al juego
                 	        }
-
                 	        // Salir al menú principal
                 	        int salirX = 20, salirY = 120, salirW = 150, salirH = 40;
-                	        if(mx >= salirX && mx <= salirX + salirW &&
-                	           my >= salirY && my <= salirY + salirH){
-                	            menuJuegoAbierto = false;
-                	            enPantallaDelJuego = false;
-                	            cambiarAImagenSecundaria(); // vuelve al menú principal
+                	        	if(mx >= salirX && mx <= salirX + salirW &&
+                	        		my >= salirY && my <= salirY + salirH){
+                	        		menuJuegoAbierto = false;
+                	        		enPantallaDelJuego = false;
+                	        		cambiarAImagenSecundaria(); // vuelve al menú principal
                 	        }
                 	    }
                 	}
-                 
-                 
                  }
-                
-                }
-        
-        
-        });
+              }    
+          });
         
 
         // Listener de hover (solo para el menú)
@@ -550,6 +500,8 @@ public class Dibujo extends Canvas {
             }
         });
     }
+    
+    
 
     
   // ------------------------------------------------------------------------------------------ //  
@@ -558,14 +510,82 @@ public class Dibujo extends Canvas {
     // Métodos 
     
     
+    
+    private void iniciarAnimacionObjeto(BufferedImage img, int origenX, int origenY) {
+
+        objetoAnimado = img;
+        animX = origenX;
+        animY = origenY;
+
+        // destino = primer slot libre del inventario
+        int slot = 0;
+
+        if(linternaEncontrada) slot++;
+        if(grabadoraEncontrada) slot++;
+        if(pistolaEncontrada) slot++;
+        if(documentoEncontrado) slot++;
+        if(huellaEncontrada) slot++;
+        if(fotoEncontrada) slot++;
+        if(ganzuasEncontradas) slot++;
+        if(llaveEncontrada) slot++;
+
+        animDestinoX = invX + slot*(invSize+espacio);
+        animDestinoY = invY;
+
+        animandoObjeto = true;
+    }
+    
+    
     public void actualizar() {
     	raton.actualizar(this); //
     	
+    	if(animandoObjeto){
+
+    	    if(animX < animDestinoX) animX += 8;
+    	    if(animX > animDestinoX) animX -= 8;
+
+    	    if(animY < animDestinoY) animY += 8;
+    	    if(animY > animDestinoY) animY -= 8;
+
+    	    if(Math.abs(animX - animDestinoX) < 10 && Math.abs(animY - animDestinoY) < 10){
+    	        animandoObjeto = false;
+    	    }
+    	}
+    	
+    	actualizarContadorPruebas();
+    	
+    	if(tiempoMensaje > 0){
+    	    tiempoMensaje--;
+    	}
 	}
+    
+    
+    
+    
+    
+    private void actualizarContadorPruebas(){
+
+        pruebasEncontradas = 0;
+
+        if(linternaEncontrada) pruebasEncontradas++;
+        if(grabadoraEncontrada) pruebasEncontradas++;
+        if(pistolaEncontrada) pruebasEncontradas++;
+        if(documentoEncontrado) pruebasEncontradas++;
+        if(huellaEncontrada) pruebasEncontradas++;
+        if(fotoEncontrada) pruebasEncontradas++;
+        if(ganzuasEncontradas) pruebasEncontradas++;
+        if(llaveEncontrada) pruebasEncontradas++;
+    }
+    
+    private void mostrarMensaje(String texto){
+        mensajeObjeto = texto;
+        tiempoMensaje = 120; // dura aprox 2 segundos
+    }
+    
     
     // -------------------------------------------------------------------------------- //
     
-public boolean tieneTodasLasHerramientas() {
+    public boolean tieneTodasLasHerramientas() {
 		return linternaEncontrada && grabadoraEncontrada && pistolaEncontrada &&
 		   documentoEncontrado && huellaEncontrada && fotoEncontrada &&
 		   llaveEncontrada;
@@ -573,19 +593,19 @@ public boolean tieneTodasLasHerramientas() {
     
     // ------------------------------------------------------------------------------------------ //
     
-public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMaximo) {
-    List<String> lineas = new ArrayList<>(); // Lista para almacenar las líneas resultantes
-    FontMetrics fm = g.getFontMetrics(); // Para medir el ancho del texto con la fuente actual
+    public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMaximo) {
+    	List<String> lineas = new ArrayList<>(); // Lista para almacenar las líneas resultantes
+    	FontMetrics fm = g.getFontMetrics(); // Para medir el ancho del texto con la fuente actual
 
-    String[] palabras = texto.split(" ");
-    StringBuilder lineaActual = new StringBuilder();
+    		String[] palabras = texto.split(" ");
+    		StringBuilder lineaActual = new StringBuilder();
 
-    for (String palabra : palabras) {
-        String prueba = lineaActual.length() == 0 ? palabra : lineaActual + " " + palabra;
-        if (fm.stringWidth(prueba) <= anchoMaximo) {
-            lineaActual = new StringBuilder(prueba);
-        } else {
-            if (lineaActual.length() > 0) {
+    		for (String palabra : palabras) {
+    		String prueba = lineaActual.length() == 0 ? palabra : lineaActual + " " + palabra;
+    		if (fm.stringWidth(prueba) <= anchoMaximo) {
+    			lineaActual = new StringBuilder(prueba);
+    		} else {
+    		if (lineaActual.length() > 0) {
                 lineas.add(lineaActual.toString());
             }
             lineaActual = new StringBuilder(palabra);
@@ -670,7 +690,6 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
     // ------------------------------------------------------------------------------------------ //
     
     // Escenarios Puertos 
-    
     
      public void cambiarAPuerto1() {
 		imagenActual = CargadorRecursos.cargarImagen("recursos/imagenes/Puerto1.jpg");
@@ -815,12 +834,17 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
             }
         }
         
-        
+        if(animandoObjeto && objetoAnimado != null){
+
+            Graphics2D gAnim = (Graphics2D) graficos;
+            gAnim.setComposite(
+                AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.9f)
+            );
+            gAnim.drawImage(objetoAnimado, animX, animY, 40, 40, null);
+        }
         // Las posiciones de clic para navegar entre pantallas de oficina.
         
-        if (enPantallaDelJuego) {
-        	
-        	
+        if (enPantallaDelJuego) { 	
         	
         	// --------------------------------------------------
         	// BARRA SUPERIOR DEL JUEGO (HUD)
@@ -833,17 +857,25 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
         	gHUD.fillRect(0,0,getWidth(),70);
 
         	gHUD.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f)); // Restaurar opacidad completa para el menú y otros elementos del HUD
-        	
         
-        	
         	gHUD.setColor(new Color(120,120,120));
         	gHUD.fillRoundRect(menuX, menuY, menuW, menuH, 10, 10);
 
         	gHUD.setColor(Color.WHITE); // Color del texto del menú	
         	gHUD.drawString("MENU", menuX + 30, menuY + 25); // Texto del botón del menú
         	
+        	gHUD.setColor(Color.WHITE);
+        	gHUD.drawString("UTILES: " + pruebasEncontradas + " / " + totalPruebas, 700, 40);
         	
         	
+        	
+        	if(tiempoMensaje > 0){
+
+        	    gHUD.setColor(Color.YELLOW);
+        	    gHUD.setFont(new Font("Arial", Font.BOLD, 20));
+
+        	    gHUD.drawString(mensajeObjeto, 400, 80);
+        	}
         	
         	
         	
@@ -871,11 +903,6 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
         	// --------------------------------------------------
         	// INVENTARIO
         	// --------------------------------------------------
-
-        	int invX = 200;
-        	int invY = 10;
-        	int invSize = 50;
-        	int espacio = 10;
 
         	gHUD.setColor(new Color(70,70,70));
 
@@ -1115,9 +1142,6 @@ public List<String> partirTextoEnLineas(Graphics2D g, String texto, int anchoMax
             // Actualizar el área de click de cierre con la altura real del cuadro
             mensajeH = alturaCuadro + 20;
         }
-    
-        
-
         
         raton.dibujar(graficos); // Dibuja la posición del ratón en la pantalla
         Point p = raton.getPosicion();
