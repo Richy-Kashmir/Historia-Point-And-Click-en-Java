@@ -4,7 +4,7 @@ Un tipico juego del genero, investiga, recolta objetos y desvela el misterio de 
 <br>
 
 -------------------------------------------------------------------------------------------------------------
-*Playlist*
+**Playlist**
 
 <br>
 
@@ -14,7 +14,7 @@ https://www.youtube.com/watch?v=3rykN-9DPLU&list=PLCNR-_-VSh6v_6mMlbjbx1pPfcSp77
 <br>
 
 -------------------------------------------------------------------------------------------------------------
-*Documentación en Youtube*
+**Documentación en Youtube**
 
 <br>
 
